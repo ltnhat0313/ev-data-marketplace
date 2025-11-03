@@ -7,8 +7,28 @@
     <link rel="stylesheet" href="/static/style.css" />
   </head>
   <body>
-    <div class="upload-container">
-      <h1>📝 Đăng ký</h1>
+    <div class="app-shell">
+      <header class="app-header">
+        <div class="brand">
+          <img src="/static/logo.svg" alt="EV Data"/>
+          <div class="brand-name">EV Data Marketplace</div>
+        </div>
+        <div class="header-actions">
+          <a href="/ui/login"><button class="btn btn-secondary" type="button">Đăng nhập</button></a>
+        </div>
+      </header>
+      <aside class="app-sidebar">
+        <div class="nav-section">
+          <h3>Điều hướng</h3>
+          <ul class="nav-list">
+            <li><a href="/ui/dashboard">🏠 Dashboard</a></li>
+            <li><a href="/ui/search">🔎 Tìm kiếm</a></li>
+          </ul>
+        </div>
+      </aside>
+      <main class="app-main">
+        <div class="card">
+          <h1 class="page-title">📝 Đăng ký</h1>
       <form id="registerForm">
         <div class="form-group">
           <label for="reg_username">Tên người dùng</label>
@@ -22,14 +42,10 @@
           <label for="reg_password">Mật khẩu</label>
           <input type="password" id="reg_password" required />
         </div>
-        <button type="submit">Tạo tài khoản</button>
+        <button class="btn btn-primary" type="submit">Tạo tài khoản</button>
       </form>
-      <div class="form-group" style="margin-top:8px;">
-        <a href="/ui/login"><button type="button">Đã có tài khoản? Đăng nhập</button></a>
-      </div>
-      <div class="form-group" style="margin-top:8px;">
-        <a href="/ui/dashboard"><button type="button">⬅️ Về Dashboard</button></a>
-      </div>
+        </div>
+      </main>
     </div>
     <script src="/static/app.js"></script>
   </body>

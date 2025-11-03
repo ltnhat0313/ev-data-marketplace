@@ -7,8 +7,28 @@
     <link rel="stylesheet" href="/static/style.css" />
   </head>
   <body>
-    <div class="upload-container">
-      <h1>📤 Upload Dataset</h1>
+    <div class="app-shell">
+      <header class="app-header">
+        <div class="brand">
+          <img src="/static/logo.svg" alt="EV Data"/>
+          <div class="brand-name">EV Data Marketplace</div>
+        </div>
+        <div class="header-actions">
+          <a href="/ui/my-datasets"><button class="btn btn-secondary" type="button">My Datasets</button></a>
+        </div>
+      </header>
+      <aside class="app-sidebar">
+        <div class="nav-section">
+          <h3>Điều hướng</h3>
+          <ul class="nav-list">
+            <li><a href="/ui/dashboard">🏠 Dashboard</a></li>
+            <li><a href="/ui/search">🔎 Tìm kiếm</a></li>
+          </ul>
+        </div>
+      </aside>
+      <main class="app-main">
+        <div class="card">
+          <h1 class="page-title">📤 Upload Dataset</h1>
 
       <form id="uploadForm">
         <div class="form-group">
@@ -40,8 +60,10 @@
           <input type="file" id="file" accept=".csv" required />
         </div>
 
-        <button type="submit">Tải lên</button>
+        <button class="btn btn-primary" type="submit">Tải lên</button>
       </form>
+        </div>
+      </main>
     </div>
 
     <script src="/static/app.js"></script>

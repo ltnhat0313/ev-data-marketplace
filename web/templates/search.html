@@ -7,8 +7,29 @@
     <link rel="stylesheet" href="/static/style.css" />
   </head>
   <body>
-    <div class="upload-container">
-      <h1>🔎 Tìm kiếm nâng cao</h1>
+    <div class="app-shell">
+      <header class="app-header">
+        <div class="brand">
+          <img src="/static/logo.svg" alt="EV Data"/>
+          <div class="brand-name">EV Data Marketplace</div>
+        </div>
+        <div class="header-actions">
+          <a href="/ui/dashboard"><button class="btn btn-secondary" type="button">Dashboard</button></a>
+        </div>
+      </header>
+      <aside class="app-sidebar">
+        <div class="nav-section">
+          <h3>Điều hướng</h3>
+          <ul class="nav-list">
+            <li><a href="/ui/dashboard">🏠 Dashboard</a></li>
+            <li><a href="/ui/upload">📤 Tải lên Dataset</a></li>
+            <li><a href="/ui/my-datasets">📂 My Datasets</a></li>
+          </ul>
+        </div>
+      </aside>
+      <main class="app-main">
+        <div class="card">
+          <h1 class="page-title">🔎 Tìm kiếm nâng cao</h1>
       <form id="searchForm">
         <div class="form-group">
           <label for="q">Từ khóa</label>
@@ -53,7 +74,7 @@
           <label for="page_size">Số dòng / trang</label>
           <input type="number" id="page_size" value="10" />
         </div>
-        <button type="submit">Tìm kiếm</button>
+        <button class="btn btn-primary" type="submit">Tìm kiếm</button>
       </form>
 
       <div class="form-group" style="margin-top:16px;">
@@ -65,9 +86,8 @@
         </div>
       </div>
 
-      <div class="form-group" style="margin-top:8px;">
-        <a href="/ui/dashboard"><button type="button">⬅️ Về Dashboard</button></a>
-      </div>
+        </div>
+      </main>
     </div>
     <script src="/static/app.js"></script>
   </body>
