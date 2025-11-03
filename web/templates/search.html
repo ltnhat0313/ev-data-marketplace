@@ -77,14 +77,28 @@
         <button class="btn btn-primary" type="submit">Tìm kiếm</button>
       </form>
 
-      <div class="form-group" style="margin-top:16px;">
-        <label>Kết quả</label>
-        <div id="results"></div>
-        <div style="display:flex;gap:8px;margin-top:8px;">
-          <button id="prevPage" type="button">Trang trước</button>
-          <button id="nextPage" type="button">Trang sau</button>
+        <div class="form-group" style="margin-top:16px;">
+          <label>Kết quả</label>
+          <div id="results" class="card">
+            <div id="resultsLoading" style="display:none;"><span class="spinner"></span> Đang tải...</div>
+            <table class="table" id="resultsTable" style="width:100%;">
+              <thead>
+                <tr>
+                  <th>Tiêu đề</th>
+                  <th>Mô tả</th>
+                  <th>Giá</th>
+                  <th>Ngày tạo</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <div id="resultsEmpty" style="display:none;color:#64748b;">Không có kết quả.</div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px;">
+            <button id="prevPage" class="btn btn-secondary" type="button">Trang trước</button>
+            <button id="nextPage" class="btn btn-secondary" type="button">Trang sau</button>
+          </div>
         </div>
-      </div>
 
         </div>
       </main>

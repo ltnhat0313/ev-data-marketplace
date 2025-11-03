@@ -72,6 +72,10 @@ let currentPage = 1;
 async function runSearch(pageOverride) {
   const results = document.getElementById("results");
   if (!searchForm || !results) return;
+  const table = document.getElementById("resultsTable");
+  const tbody = table ? table.querySelector('tbody') : null;
+  const loading = document.getElementById('resultsLoading');
+  const empty = document.getElementById('resultsEmpty');
   const q = document.getElementById("q").value || "";
   const min_price = document.getElementById("min_price").value;
   const max_price = document.getElementById("max_price").value;
@@ -95,31 +99,32 @@ async function runSearch(pageOverride) {
   params.append("page", currentPage);
   params.append("page_size", page_size);
 
-  results.innerHTML = "Đang tải...";
+  if (loading) loading.style.display = 'block';
+  if (empty) empty.style.display = 'none';
+  if (tbody) tbody.innerHTML = '';
   try {
     const res = await fetch(`/datasets/search?${params.toString()}`);
     const data = await res.json();
     const items = data.items || [];
     if (!items.length) {
-      results.innerHTML = "Không có kết quả.";
+      if (empty) empty.style.display = 'block';
       return;
     }
-    const html = items
-      .map(
-        (d) =>
-          `<div style="border:1px solid #d1d1d1;border-radius:8px;padding:10px;margin-bottom:8px;">
-            <div><strong>${d.title}</strong></div>
-            <div>${d.description || ""}</div>
-            <div>Giá: ${d.price ?? 0}</div>
-            <div>Ngày tạo: ${d.created_at || ""}</div>
-          </div>`
-      )
-      .join("");
-    results.innerHTML = html;
+    if (tbody) {
+      const rows = items.map(d => `
+        <tr>
+          <td><strong>${d.title}</strong></td>
+          <td>${d.description || ''}</td>
+          <td><span class="badge badge-info">${d.price ?? 0}</span></td>
+          <td>${d.created_at || ''}</td>
+        </tr>
+      `).join('');
+      tbody.innerHTML = rows;
+    }
   } catch (e) {
-    results.innerHTML = "Lỗi tải dữ liệu.";
-    console.error(e);
+    showToast('Lỗi tải dữ liệu tìm kiếm', 'error');
   }
+  finally { if (loading) loading.style.display = 'none'; }
 }
 
 if (searchForm) {
@@ -132,6 +137,20 @@ if (searchForm) {
   const next = document.getElementById("nextPage");
   if (prev) prev.addEventListener("click", () => { currentPage = Math.max(1, currentPage - 1); runSearch(currentPage); });
   if (next) next.addEventListener("click", () => { currentPage += 1; runSearch(currentPage); });
+}
+
+// Toast helper
+function showToast(message, type) {
+  let el = document.getElementById('appToast');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'appToast';
+    el.className = 'toast';
+    document.body.appendChild(el);
+  }
+  el.className = `toast show ${type || ''}`;
+  el.textContent = message;
+  setTimeout(() => { el.className = 'toast'; }, 2200);
 }
 
 // Login form
