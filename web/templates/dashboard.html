@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - EV Data Marketplace</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="upload-container">
+      <h1>📊 Dashboard</h1>
+      <div class="form-group">
+        <label>Tổng quan</label>
+        <div id="summary" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+          <div class="card" style="padding:12px;border:1px solid #d1d1d1;border-radius:8px;">
+            <div><strong>Người dùng</strong></div>
+            <div id="sumUsers">0</div>
+          </div>
+          <div class="card" style="padding:12px;border:1px solid #d1d1d1;border-radius:8px;">
+            <div><strong>Datasets</strong></div>
+            <div id="sumDatasets">0</div>
+          </div>
+          <div class="card" style="padding:12px;border:1px solid #d1d1d1;border-radius:8px;">
+            <div><strong>Giao dịch</strong></div>
+            <div id="sumTxs">0</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Mới nhất</label>
+        <ul id="latestList" style="list-style:none;padding-left:0;margin-top:8px;"></ul>
+      </div>
+
+      <div class="form-group" style="display:flex;gap:10px;">
+        <a href="/ui/search"><button type="button">🔎 Tìm kiếm nâng cao</button></a>
+        <a href="/ui/upload"><button type="button">📤 Tải lên Dataset</button></a>
+        <a href="/ui/my-datasets"><button type="button">📂 My Datasets</button></a>
+        <a href="/ui/login"><button type="button">🔐 Đăng nhập</button></a>
+        <a href="/ui/register"><button type="button">📝 Đăng ký</button></a>
+        <a href="/ui/profile"><button type="button">👤 Hồ sơ</button></a>
+        <button id="logoutBtn" type="button">🚪 Đăng xuất</button>
+      </div>
+    </div>
+    <script src="/static/app.js"></script>
+  </body>
+  </html>
+
+

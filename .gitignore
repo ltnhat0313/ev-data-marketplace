@@ -1,0 +1,54 @@
+# 1. Tệp bí mật & Cấu hình cục bộ (Secrets & Local Configs)
+# TUYỆT ĐỐI KHÔNG đưa file .env lên GitHub!
+.env
+.env.local
+.env.*.local
+
+# 2. Môi trường ảo Python (Virtual Environments)
+# Đây là lý do bạn thấy thư mục venv/
+venv/
+env/
+.venv/
+*/venv/
+*/env/
+*/.venv/
+
+# 3. Cơ sở dữ liệu cục bộ (Local Databases)
+# Đây là lý do bạn thấy file evmarket.db
+*.db
+*.sqlite
+*.sqlite3
+
+# 4. Tệp cache & biên dịch của Python (Python Cache)
+# Đây là lý do bạn thấy thư mục __pycache__
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 5. Cấu hình IDE & Editor (IDE Configs)
+# Rất quan trọng vì bạn đang dùng VS Code
+.vscode/
+.idea/
+
+# 6. Tệp hệ điều hành (OS Files)
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# 7. Tệp Logs
+*.log
+logs/
+
+# 8. Tệp Build & Phân phối (Build & Distribution)
+build/
+dist/
+*.egg-info/
+sdist/
+wheelhouse/
+
+# 9. Tệp Kiểm thử (Testing)
+.pytest_cache/
+.tox/
+htmlcov/
+coverage.xml

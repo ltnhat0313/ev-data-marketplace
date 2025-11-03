@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upload Dataset</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="upload-container">
+      <h1>📤 Upload Dataset</h1>
+
+      <form id="uploadForm">
+        <div class="form-group">
+          <label for="name">Tên dataset</label>
+          <input
+            type="text"
+            id="name"
+            placeholder="Nhập tên dataset"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="description">Mô tả</label>
+          <textarea
+            id="description"
+            rows="3"
+            placeholder="Mô tả ngắn gọn về dataset..."
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="price">Giá (VNĐ)</label>
+          <input type="number" id="price" placeholder="Nhập giá bán" required />
+        </div>
+
+        <div class="form-group">
+          <label for="file">Tệp CSV</label>
+          <input type="file" id="file" accept=".csv" required />
+        </div>
+
+        <button type="submit">Tải lên</button>
+      </form>
+    </div>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
+

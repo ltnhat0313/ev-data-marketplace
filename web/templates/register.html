@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng ký - EV Data Marketplace</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="upload-container">
+      <h1>📝 Đăng ký</h1>
+      <form id="registerForm">
+        <div class="form-group">
+          <label for="reg_username">Tên người dùng</label>
+          <input type="text" id="reg_username" required />
+        </div>
+        <div class="form-group">
+          <label for="reg_email">Email</label>
+          <input type="email" id="reg_email" required />
+        </div>
+        <div class="form-group">
+          <label for="reg_password">Mật khẩu</label>
+          <input type="password" id="reg_password" required />
+        </div>
+        <button type="submit">Tạo tài khoản</button>
+      </form>
+      <div class="form-group" style="margin-top:8px;">
+        <a href="/ui/login"><button type="button">Đã có tài khoản? Đăng nhập</button></a>
+      </div>
+      <div class="form-group" style="margin-top:8px;">
+        <a href="/ui/dashboard"><button type="button">⬅️ Về Dashboard</button></a>
+      </div>
+    </div>
+    <script src="/static/app.js"></script>
+  </body>
+  </html>
+
+
