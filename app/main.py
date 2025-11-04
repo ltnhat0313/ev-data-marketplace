@@ -17,8 +17,8 @@ app.include_router(user_routes.router)
 app.include_router(dataset_routes.router)
 
 # Static & Templates
-app.mount("/static", StaticFiles(directory="ev-data-marketplace-main/web/static"), name="static")
-templates = Jinja2Templates(directory="ev-data-marketplace-main/web/templates")
+app.mount("/static", StaticFiles(directory="web/static"), name="static")
+templates = Jinja2Templates(directory="web/templates")
 
 # Khởi tạo DB & thư mục uploads khi start
 @app.on_event("startup")
