@@ -74,6 +74,12 @@ Yêu cầu:
 - Git  
 - PostgreSQL  
 
+Tạo file `.env` (có thể copy từ mẫu):
+
+```bash
+cp .env.example .env
+```
+
 Cài đặt thư viện:
 
 ```bash
@@ -98,13 +104,9 @@ DEBUG=True
 ### 3️⃣ Tạo database & migration
 
 ```bash
-alembic upgrade head
-```
-
-Nếu chưa có migration:
-
-```bash
+# tạo migration mới dựa trên models hiện tại
 alembic revision --autogenerate -m "init"
+# áp dụng migration
 alembic upgrade head
 ```
 
