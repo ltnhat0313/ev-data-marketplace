@@ -135,7 +135,7 @@ def upload_dataset(
     if not file.filename.lower().endswith(".csv"):
         raise HTTPException(status_code=400, detail="Chỉ hỗ trợ tệp CSV")
 
-    upload_dir = "ev-data-marketplace-main/uploads"
+    upload_dir = "uploads"
     os.makedirs(upload_dir, exist_ok=True)
     safe_name = file.filename.replace("..", "_")
     save_path = os.path.join(upload_dir, safe_name)

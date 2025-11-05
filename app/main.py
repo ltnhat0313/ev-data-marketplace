@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -16,6 +17,15 @@ app.include_router(auth_routes.router)
 app.include_router(user_routes.router)
 app.include_router(dataset_routes.router)
 
+# CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Static & Templates
 app.mount("/static", StaticFiles(directory="web/static"), name="static")
 templates = Jinja2Templates(directory="web/templates")
@@ -24,7 +34,7 @@ templates = Jinja2Templates(directory="web/templates")
 @app.on_event("startup")
 def on_startup():
     Base.metadata.create_all(bind=engine)
-    os.makedirs("ev-data-marketplace-main/uploads", exist_ok=True)
+    os.makedirs("uploads", exist_ok=True)
 
 @app.get("/", response_class=HTMLResponse)
 def root(request: Request):
