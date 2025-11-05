@@ -6,6 +6,7 @@ from fastapi.templating import Jinja2Templates
 from app.api import routes
 from app.api import auth_routes, user_routes  # ✅ thêm 2 dòng này
 from app.api import dataset_routes
+from app.api import transaction_routes
 from app.core.database import Base, engine
 import os
 
@@ -16,6 +17,7 @@ app.include_router(routes.router)
 app.include_router(auth_routes.router)
 app.include_router(user_routes.router)
 app.include_router(dataset_routes.router)
+app.include_router(transaction_routes.router)
 
 # CORS
 app.add_middleware(
