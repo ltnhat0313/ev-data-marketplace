@@ -281,6 +281,73 @@
             <li class="list-item"><div class="list-title">Q4: Mở rộng marketplace đa khu vực, chuẩn dữ liệu ngành</div></li>
           </ul>
         </div>
+
+        <div class="card" style="margin-top: 12px;">
+          <h2 class="page-title">Use Cases tiêu biểu</h2>
+          <ul class="list">
+            <li class="list-item">
+              <div>
+                <div class="list-title">Tối ưu vận hành đội xe (Fleet)</div>
+                <div class="list-meta">Theo dõi SoC/SoH, lịch sạc tối ưu, dự báo bảo trì để giảm downtime.</div>
+              </div>
+            </li>
+            <li class="list-item">
+              <div>
+                <div class="list-title">Quy hoạch hạ tầng sạc</div>
+                <div class="list-meta">Phân tích mật độ sạc, thời gian cao điểm, đề xuất vị trí đặt trạm.</div>
+              </div>
+            </li>
+            <li class="list-item">
+              <div>
+                <div class="list-title">Bảo hiểm thông minh</div>
+                <div class="list-meta">Định phí dựa trên hành vi lái xe và tình trạng pin theo dữ liệu thực.</div>
+              </div>
+            </li>
+            <li class="list-item">
+              <div>
+                <div class="list-title">Báo cáo ESG & giảm phát thải</div>
+                <div class="list-meta">Tính toán CO₂ tiết kiệm, điện tiêu thụ tái tạo, minh bạch số liệu ESG.</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top: 12px;">
+          <h2 class="page-title">Taxonomy dữ liệu (tóm tắt)</h2>
+          <ul class="list">
+            <li class="list-item"><div><div class="list-title">Hành vi lái xe</div><div class="list-meta">Tốc độ, tăng/giảm tốc, phanh, quãng đường, địa hình.</div></div></li>
+            <li class="list-item"><div><div class="list-title">Pin & sạc</div><div class="list-meta">SoC/SoH, chu kỳ sạc, công suất, nhiệt độ, hiệu suất.</div></div></li>
+            <li class="list-item"><div><div class="list-title">Trạm sạc</div><div class="list-meta">Vị trí, công suất, thời gian sử dụng, hàng chờ, lỗi.</div></div></li>
+            <li class="list-item"><div><div class="list-title">Giao dịch năng lượng (V2G)</div><div class="list-meta">Giá, thời gian, lượng điện, tham gia lưới.</div></div></li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top: 12px;">
+          <h2 class="page-title">Dataset mẫu (gợi ý)</h2>
+          <ul class="list">
+            <li class="list-item"><div><div class="list-title">EV_Drive_Trips_2025_Q1.csv</div><div class="list-meta">100k chuyến | 12 cột | 1.2GB | Raw</div></div></li>
+            <li class="list-item"><div><div class="list-title">Battery_Cycles_Lab_Aggregated.parquet</div><div class="list-meta">500k mẫu | 30 cột | 3.8GB | Processed</div></div></li>
+            <li class="list-item"><div><div class="list-title">Charging_Heatmap_CityX_2024.geojson</div><div class="list-meta">2k nút | geospatial | 12MB | Processed</div></div></li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top: 12px;">
+          <h2 class="page-title">Câu hỏi thường gặp (FAQ)</h2>
+          <ul class="list">
+            <li class="list-item"><div><div class="list-title">Dữ liệu có được ẩn danh không?</div><div class="list-meta">Có. PII được loại bỏ và dữ liệu được tổng hợp theo chính sách riêng tư.</div></div></li>
+            <li class="list-item"><div><div class="list-title">Tôi có thể hoàn tiền khi dataset không phù hợp?</div><div class="list-meta">Chính sách hoàn tiền tùy loại gói (demo/preview/claim) và điều khoản.</div></div></li>
+            <li class="list-item"><div><div class="list-title">Có SDK hay chỉ là API?</div><div class="list-meta">Hiện có REST API; SDK (Python/JS) sẽ phát hành theo roadmap.</div></div></li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top: 12px;">
+          <h2 class="page-title">Bắt đầu ngay</h2>
+          <div class="form-group btn-group">
+            <a href="/ui/search"><button class="btn btn-secondary" type="button">🔎 Khám phá dữ liệu</button></a>
+            <a href="/ui/upload"><button class="btn btn-primary" type="button">📤 Trở thành Data Provider</button></a>
+            <a href="/ui/register"><button class="btn btn-secondary" type="button">📝 Đăng ký tài khoản</button></a>
+          </div>
+        </div>
       </main>
     </div>
     <div class="app-footer">© EV Data Marketplace · Built with FastAPI</div>
