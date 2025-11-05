@@ -34,27 +34,27 @@
       <main class="app-main">
         <div class="card">
           <h1 class="page-title">📊 Dashboard</h1>
-          <div class="grid-3" id="summary">
-            <div class="card grid-gap">
-              <div><strong>Người dùng</strong></div>
-              <div id="sumUsers">0</div>
+          <div class="grid-3" id="summary" aria-label="Tổng quan nhanh">
+            <div class="card grid-gap summary-card" aria-live="polite">
+              <div class="stat-label">Người dùng</div>
+              <div class="stat-value" id="sumUsers">0</div>
             </div>
-            <div class="card grid-gap">
-              <div><strong>Datasets</strong></div>
-              <div id="sumDatasets">0</div>
+            <div class="card grid-gap summary-card" aria-live="polite">
+              <div class="stat-label">Datasets</div>
+              <div class="stat-value" id="sumDatasets">0</div>
             </div>
-            <div class="card grid-gap">
-              <div><strong>Giao dịch</strong></div>
-              <div id="sumTxs">0</div>
+            <div class="card grid-gap summary-card" aria-live="polite">
+              <div class="stat-label">Giao dịch</div>
+              <div class="stat-value" id="sumTxs">0</div>
             </div>
           </div>
 
-          <div class="form-group" style="margin-top:14px;">
+          <div class="form-group latest-section">
             <label> Mới nhất </label>
-            <ul id="latestList" style="list-style:none;padding-left:0;margin-top:8px;"></ul>
+            <ul id="latestList" class="list"></ul>
           </div>
 
-          <div class="form-group" style="display:flex;gap:10px;flex-wrap:wrap;">
+          <div class="form-group btn-group">
             <a href="/ui/search"><button class="btn btn-secondary" type="button">🔎 Tìm kiếm nâng cao</button></a>
             <a href="/ui/upload"><button class="btn btn-primary" type="button">📤 Tải lên Dataset</button></a>
             <a href="/ui/my-datasets"><button class="btn btn-secondary" type="button">📂 My Datasets</button></a>

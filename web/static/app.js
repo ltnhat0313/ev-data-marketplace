@@ -57,7 +57,22 @@ async function loadSummary() {
     latestList.innerHTML = "";
     (data.latest || []).forEach((d) => {
       const li = document.createElement("li");
-      li.textContent = `${d.title} - ${d.price ?? 0} - ${d.created_at ?? ""}`;
+      li.className = 'list-item';
+      const title = document.createElement('div');
+      title.className = 'list-title';
+      title.textContent = d.title;
+      const meta = document.createElement('div');
+      meta.className = 'list-meta';
+      const price = document.createElement('span');
+      price.className = 'badge badge-info';
+      price.textContent = `${d.price ?? 0}`;
+      const date = document.createElement('span');
+      date.className = 'list-date';
+      date.textContent = d.created_at || '';
+      meta.appendChild(price);
+      meta.appendChild(date);
+      li.appendChild(title);
+      li.appendChild(meta);
       latestList.appendChild(li);
     });
   } catch (e) {
