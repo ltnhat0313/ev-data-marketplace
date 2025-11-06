@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="32" viewBox="0 0 240 64" fill="none">
+  <rect rx="8" width="240" height="64" fill="#0B5FFF"/>
+  <circle cx="32" cy="32" r="16" fill="white"/>
+  <path d="M28 24 L36 32 L28 40" stroke="#0B5FFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="64" y="40" fill="white" font-size="22" font-family="Segoe UI, Arial, sans-serif">EV Data</text>
+</svg>
+
+

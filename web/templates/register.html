@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng ký - EV Data Marketplace</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <div class="brand">
+          <img src="/static/logo.svg" alt="EV Data"/>
+          <div class="brand-name">EV Data Marketplace</div>
+        </div>
+        <div class="header-actions">
+          <a href="/ui/login"><button class="btn btn-secondary" type="button">Đăng nhập</button></a>
+        </div>
+      </header>
+      <aside class="app-sidebar">
+        <div class="nav-section">
+          <h3>Điều hướng</h3>
+          <ul class="nav-list">
+            <li><a href="/ui/dashboard">🏠 Dashboard</a></li>
+            <li><a href="/ui/search">🔎 Tìm kiếm</a></li>
+          </ul>
+        </div>
+      </aside>
+      <main class="app-main">
+        <div class="card">
+          <h1 class="page-title">📝 Đăng ký</h1>
+      <form id="registerForm">
+        <div class="form-group">
+          <label for="reg_username">Tên người dùng</label>
+          <input type="text" id="reg_username" required />
+        </div>
+        <div class="form-group">
+          <label for="reg_email">Email</label>
+          <input type="email" id="reg_email" required />
+        </div>
+        <div class="form-group">
+          <label for="reg_password">Mật khẩu</label>
+          <input type="password" id="reg_password" required />
+        </div>
+        <button class="btn btn-primary" type="submit">Tạo tài khoản</button>
+      </form>
+        </div>
+      </main>
+    </div>
+    <script src="/static/app.js"></script>
+  </body>
+  </html>
+
+
