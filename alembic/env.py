@@ -1,12 +1,18 @@
-from __future__ import with_statement
+from __future__ import with_statement # PHẢI Ở DÒNG ĐẦU TIÊN
 from logging.config import fileConfig
 import os
+import sys # Import sys
+from pathlib import Path # Import Path
+
+# Thêm thư mục gốc của dự án vào PYTHONPATH để Alembic có thể import 'app.*'
+# Đây là vị trí chính xác: chạy trước các import từ 'app'
+sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from alembic import context
 
-from app.core.database import Base
+from app.core.database import Base # Dòng này giờ sẽ hoạt động
 from app.models import models  # import models to register metadata
 from app.core.config import settings
 
@@ -57,5 +63,3 @@ if context.is_offline_mode():
     run_migrations_offline()
 else:
     run_migrations_online()
-
-
