@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
+=======
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime, Boolean
+>>>>>>> nam
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.core.database import Base
@@ -31,3 +35,14 @@ class Transaction(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     dataset_id = Column(Integer, ForeignKey("datasets.id"))
     timestamp = Column(DateTime, default=datetime.utcnow)
+<<<<<<< HEAD
+=======
+
+
+class TwoFactorSecret(Base):
+    __tablename__ = "two_factor_secrets"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
+    secret = Column(String)
+    enabled = Column(Boolean, default=False)
+>>>>>>> nam
