@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-from fastapi import FastAPI
-from app.api import routes
-from app.api import auth_routes, user_routes  # ✅ thêm 2 dòng này
-=======
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
@@ -14,7 +9,6 @@ from app.api import dataset_routes
 from app.api import transaction_routes
 from app.core.database import Base, engine
 import os
->>>>>>> nam
 
 app = FastAPI(title="EV Data Marketplace API")
 
@@ -22,12 +16,6 @@ app = FastAPI(title="EV Data Marketplace API")
 app.include_router(routes.router)
 app.include_router(auth_routes.router)
 app.include_router(user_routes.router)
-<<<<<<< HEAD
-
-@app.get("/")
-def root():
-    return {"message": "Welcome to EV Data Marketplace API 🚗"}
-=======
 app.include_router(dataset_routes.router)
 app.include_router(transaction_routes.router)
 
@@ -82,4 +70,3 @@ def ui_my_datasets(request: Request):
 @app.get("/ui/profile", response_class=HTMLResponse)
 def ui_profile(request: Request):
     return templates.TemplateResponse("profile.html", {"request": request})
->>>>>>> nam

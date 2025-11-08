@@ -4,10 +4,6 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.core.database import SessionLocal
-<<<<<<< HEAD
-from app.models.models import User
-from app.schemas.user_schema import UserOut
-=======
 from app.models.models import User, TwoFactorSecret
 from app.schemas.user_schema import UserOut
 from app.schemas.user_schema import ChangePasswordInput
@@ -16,7 +12,6 @@ import pyotp
 import qrcode
 import io
 from fastapi.responses import StreamingResponse
->>>>>>> nam
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -51,8 +46,6 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
 @router.get("/me", response_model=UserOut)
 def read_users_me(current_user: User = Depends(get_current_user)):
     return current_user
-<<<<<<< HEAD
-=======
 
 
 @router.post("/me/change-password")
@@ -130,4 +123,3 @@ def twofa_qr(db: Session = Depends(get_db), current_user: User = Depends(get_cur
     img.save(buf, format="PNG")
     buf.seek(0)
     return StreamingResponse(buf, media_type="image/png")
->>>>>>> nam
