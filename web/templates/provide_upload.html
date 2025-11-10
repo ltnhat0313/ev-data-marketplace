@@ -1,16 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Upload Dataset</title>
-<<<<<<< HEAD
-    <link rel="stylesheet" href="../static/style.css" />
-  </head>
-  <body>
-    <div class="upload-container">
-      <h1>📤 Upload Dataset</h1>
-=======
+    <title>Upload Dataset - EV Data Marketplace</title>
     <link rel="stylesheet" href="/static/style.css" />
   </head>
   <body>
@@ -30,59 +23,51 @@
           <ul class="nav-list">
             <li><a href="/ui/dashboard">🏠 Dashboard</a></li>
             <li><a href="/ui/search">🔎 Tìm kiếm</a></li>
+            <li><a href="/ui/my-datasets">📂 My Datasets</a></li>
+            <li><a href="/ui/upload">📤 Tải lên Dataset</a></li>
           </ul>
         </div>
       </aside>
       <main class="app-main">
         <div class="card">
           <h1 class="page-title">📤 Upload Dataset</h1>
->>>>>>> nam
 
-      <form id="uploadForm">
-        <div class="form-group">
-          <label for="name">Tên dataset</label>
-          <input
-            type="text"
-            id="name"
-            placeholder="Nhập tên dataset"
-            required
-          />
-        </div>
+          <form id="uploadForm">
+            <div class="form-group">
+              <label for="name">Tên dataset</label>
+              <input
+                type="text"
+                id="name"
+                placeholder="Nhập tên dataset"
+                required
+              />
+            </div>
 
-        <div class="form-group">
-          <label for="description">Mô tả</label>
-          <textarea
-            id="description"
-            rows="3"
-            placeholder="Mô tả ngắn gọn về dataset..."
-          ></textarea>
-        </div>
+            <div class="form-group">
+              <label for="description">Mô tả</label>
+              <textarea
+                id="description"
+                rows="3"
+                placeholder="Mô tả ngắn gọn về dataset..."
+              ></textarea>
+            </div>
 
-        <div class="form-group">
-          <label for="price">Giá (VNĐ)</label>
-          <input type="number" id="price" placeholder="Nhập giá bán" required />
-        </div>
+            <div class="form-group">
+              <label for="price">Giá (VNĐ)</label>
+              <input type="number" id="price" value="0" placeholder="Nhập giá bán" required />
+            </div>
 
-        <div class="form-group">
-          <label for="file">Tệp CSV</label>
-          <input type="file" id="file" accept=".csv" required />
-        </div>
+            <div class="form-group">
+              <label for="file">Tệp CSV</label>
+              <input type="file" id="file" accept=".csv" required />
+            </div>
 
-<<<<<<< HEAD
-        <button type="submit">Tải lên</button>
-      </form>
-    </div>
-
-    <script src="../static/app.js"></script>
-=======
-        <button class="btn btn-primary" type="submit">Tải lên</button>
-      </form>
+            <button class="btn btn-primary" type="submit">Tải lên</button>
+          </form>
         </div>
       </main>
     </div>
 
     <script src="/static/app.js"></script>
->>>>>>> nam
   </body>
 </html>
-

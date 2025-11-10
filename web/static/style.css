@@ -8,74 +8,6 @@
 /* Toàn trang */
 body {
   background-color: #f4f6fa;
-<<<<<<< HEAD
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-
-/* Khung chính */
-.upload-container {
-  background-color: #fff;
-  width: 400px;
-  padding: 30px;
-  border-radius: 15px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-  text-align: left;
-}
-
-/* Tiêu đề */
-.upload-container h1 {
-  text-align: center;
-  color: #0078d7;
-  margin-bottom: 25px;
-}
-
-/* Nhóm input */
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: #333;
-}
-
-.form-group input,
-.form-group textarea {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #d1d1d1;
-  border-radius: 8px;
-  outline: none;
-  transition: all 0.3s ease;
-}
-
-.form-group input:focus,
-.form-group textarea:focus {
-  border-color: #0078d7;
-  box-shadow: 0 0 5px rgba(0, 120, 215, 0.3);
-}
-
-/* Nút submit */
-button {
-  width: 100%;
-  padding: 12px;
-  background-color: #0078d7;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-button:hover {
-  background-color: #005fa3;
-=======
   color: #0f172a;
   min-height: 100vh;
 }
@@ -230,6 +162,4 @@ button:hover {
 
 @media (max-width: 640px) {
   .grid-3 { grid-template-columns: 1fr; }
->>>>>>> nam
 }
-
