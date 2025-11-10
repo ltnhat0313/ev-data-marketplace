@@ -1,6 +1,7 @@
 # tests/test_forecast.py
 import pandas as pd
 from app.services import ai_forecast
+import os # Nên import os để dùng tmp_path
 
 def test_forecast_with_sample_data(tmp_path):
     # 🔹 Tạo dữ liệu giả
@@ -10,15 +11,26 @@ def test_forecast_with_sample_data(tmp_path):
     })
 
     # 🔹 Train model Prophet tạm
-    ai_forecast.MODEL_DIR = tmp_path
-    result = ai_forecast.train_forecast(data, dataset_id="test123")
+    # Ghi đè thư mục model để dùng thư mục test tạm thời
+    ai_forecast.MODEL_DIR = str(tmp_path)
+    
+    # ❌ SỬA LỖI TẠI ĐÂY:
+    # Tên hàm gốc (bị lỗi): ai_forecast.train_forecast(data, dataset_id="test123")
+    # Tên hàm đúng là 'train_forecast_model'
+    result = ai_forecast.train_forecast_model(data, dataset_id="test123")
 
-    assert "model" in result
+    # Kiểm tra xem file model đã được tạo chưa
+    assert "model_path" in result
+    assert os.path.exists(result["model_path"])
 
     # 🔹 Gọi dự báo
-    forecast = ai_forecast.forecast_downloads("test123", days=5)
+    forecast = ai_forecast.forecast_downloads(dataset_id="test123", periods=5)
 
     # 🔹 Kiểm tra định dạng kết quả
     assert len(forecast) == 5
-    assert "date" in forecast[0]
-    assert "predicted_downloads" in forecast[0]
+    
+    # ❌ SỬA LỖI TẠI ĐÂY:
+    # Tên cột gốc (bị lỗi): 'date' và 'predicted_downloads'
+    # Dựa trên file ai_forecast.py, tên cột đúng là 'ds' và 'yhat'
+    assert "ds" in forecast[0]
+    assert "yhat" in forecast[0]

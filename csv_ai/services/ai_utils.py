@@ -1,6 +1,7 @@
 import pandas as pd
 from sqlalchemy.orm import Session
-from app.models.dataset import Dataset
+# Dòng này đã được sửa để trỏ đến models.py
+from app.models.models import Dataset
 
 def load_metadata_from_db(db: Session):
     """
@@ -13,7 +14,7 @@ def load_metadata_from_db(db: Session):
             "id": str(d.id),
             "title": d.title,
             "description": d.description,
-            "tags": d.tags,
+            "tags": d.tags, # Giả sử bạn có cột 'tags' và 'text_sample'
             "text_sample": d.text_sample
         })
     return pd.DataFrame(data)

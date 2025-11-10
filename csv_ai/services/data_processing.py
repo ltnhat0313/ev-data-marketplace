@@ -1,3 +1,4 @@
+import re  # <--- SỬA LỖI: Thêm dòng này
 import pandas as pd
 from typing import Tuple, List
 from .anonymize import anonymize_dataframe
@@ -12,6 +13,7 @@ def validate_csv_columns(path: str, required: List[str]) -> Tuple[bool, List[str
 
 def sanitize_and_save(csv_path: str):
     df = pd.read_csv(csv_path)
+    # Hàm re.sub() cần thư viện 're' để hoạt động
     df.columns = [re.sub(r'[^a-zA-Z0-9_]', '_', c.lower()) for c in df.columns]
     df.fillna("", inplace=True)
     df.to_csv(csv_path, index=False)
