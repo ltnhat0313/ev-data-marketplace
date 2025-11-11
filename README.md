@@ -1,3 +1,4 @@
+
 # ⚡ EV Data Analytics Marketplace
 ### Chợ Dữ Liệu Phân Tích Xe Điện
 
@@ -74,15 +75,12 @@ Yêu cầu:
 - Git  
 - PostgreSQL  
 
-<<<<<<< HEAD
-=======
 Tạo file `.env` (có thể copy từ mẫu):
 
 ```bash
 cp .env.example .env
 ```
 
->>>>>>> nam
 Cài đặt thư viện:
 
 ```bash
@@ -107,19 +105,9 @@ DEBUG=True
 ### 3️⃣ Tạo database & migration
 
 ```bash
-<<<<<<< HEAD
-alembic upgrade head
-```
-
-Nếu chưa có migration:
-
-```bash
-alembic revision --autogenerate -m "init"
-=======
 # tạo migration mới dựa trên models hiện tại
 alembic revision --autogenerate -m "init"
 # áp dụng migration
->>>>>>> nam
 alembic upgrade head
 ```
 
