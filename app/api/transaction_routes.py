@@ -16,6 +16,31 @@ def get_db():
 		db.close()
 
 
+@router.get("/mine")
+def my_transactions(
+	db: Session = Depends(get_db),
+	current_user: User = Depends(get_current_user),
+):
+	transactions = (
+		db.query(Transaction)
+		.filter(Transaction.user_id == current_user.id)
+		.order_by(Transaction.created_at.desc())
+		.all()
+	)
+	
+	result = []
+	for tx in transactions:
+		dataset = db.query(Dataset).filter(Dataset.id == tx.dataset_id).first()
+		result.append({
+			"id": tx.id,
+			"dataset_id": tx.dataset_id,
+			"dataset_title": dataset.title if dataset else "N/A",
+			"created_at": tx.created_at.isoformat() if tx.created_at else None,
+		})
+	
+	return result
+
+
 @router.post("/purchase")
 def create_purchase(
 	dataset_id: int,

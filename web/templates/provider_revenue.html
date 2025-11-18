@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Doanh thu - Provider - EV Data Marketplace</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <div class="brand">
+          <img src="/static/logo.svg" alt="EV Data"/>
+          <div class="brand-name">EV Data Marketplace</div>
+        </div>
+        <div class="header-actions">
+          <a href="/ui/dashboard"><button class="btn btn-secondary" type="button">Dashboard</button></a>
+          <button id="logoutBtn" class="btn btn-secondary" type="button">Đăng xuất</button>
+        </div>
+      </header>
+      <aside class="app-sidebar">
+        <div class="nav-section">
+          <h3>Điều hướng</h3>
+          <ul class="nav-list">
+            <li><a href="/ui/dashboard">🏠 Dashboard</a></li>
+            <li><a href="/ui/my-datasets">📂 My Datasets</a></li>
+            <li><a href="/ui/upload">📤 Tải lên Dataset</a></li>
+            <li><a href="/ui/revenue">💰 Doanh thu</a></li>
+          </ul>
+        </div>
+      </aside>
+      <main class="app-main">
+        <div class="card">
+          <h1 class="page-title">💰 Doanh thu Provider</h1>
+          
+          <div class="grid-3" style="margin-top: 20px;">
+            <div class="card grid-gap summary-card">
+              <div class="stat-label">Tổng Doanh thu</div>
+              <div class="stat-value" id="totalRevenue">0 VNĐ</div>
+            </div>
+            <div class="card grid-gap summary-card">
+              <div class="stat-label">Tổng Lượt bán</div>
+              <div class="stat-value" id="totalSales">0</div>
+            </div>
+            <div class="card grid-gap summary-card">
+              <div class="stat-label">Số Datasets</div>
+              <div class="stat-value" id="datasetsCount">0</div>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 24px;">
+            <label>Chi tiết doanh thu theo Dataset</label>
+            <div id="revenueLoading" style="display: none;"><span class="spinner"></span> Đang tải...</div>
+            <div id="revenueList"></div>
+            <div id="revenueEmpty" style="display: none; text-align: center; padding: 40px; color: #64748b;">
+              <p>Chưa có doanh thu nào. Hãy upload datasets và chờ người dùng mua!</p>
+              <a href="/ui/upload" class="btn btn-primary" style="margin-top: 12px;">Upload Dataset mới</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 12px;">
+          <h2 class="page-title">📈 Biểu đồ Doanh thu</h2>
+          <div style="max-height: 400px;">
+            <canvas id="revenueChart"></canvas>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="/static/app.js"></script>
+    <script>
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = '/ui/login';
+      }
+
+      let revenueChart = null;
+
+      async function loadRevenue() {
+        const loading = document.getElementById('revenueLoading');
+        const list = document.getElementById('revenueList');
+        const empty = document.getElementById('revenueEmpty');
+        
+        loading.style.display = 'block';
+        list.innerHTML = '';
+        empty.style.display = 'none';
+        
+        try {
+          const res = await fetch('/provider/revenue', {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          
+          if (!res.ok) {
+            if (res.status === 401) {
+              window.location.href = '/ui/login';
+              return;
+            }
+            throw new Error('Không thể tải doanh thu');
+          }
+          
+          const data = await res.json();
+          
+          // Update stats
+          document.getElementById('totalRevenue').textContent = 
+            new Intl.NumberFormat('vi-VN').format(data.total_revenue || 0) + ' VNĐ';
+          document.getElementById('totalSales').textContent = data.total_sales || 0;
+          document.getElementById('datasetsCount').textContent = data.datasets_count || 0;
+          
+          if (!data.datasets || data.datasets.length === 0) {
+            loading.style.display = 'none';
+            empty.style.display = 'block';
+            return;
+          }
+          
+          // Render dataset list
+          list.innerHTML = data.datasets.map(d => `
+            <div class="list-item" style="margin-bottom: 12px;">
+              <div style="flex: 1;">
+                <div class="list-title">
+                  <a href="/ui/dataset?id=${d.id}" style="text-decoration: none; color: #0b5fff;">${d.title}</a>
+                </div>
+                <div class="list-meta" style="margin-top: 8px;">
+                  <span>Giá: <strong>${new Intl.NumberFormat('vi-VN').format(d.price || 0)} VNĐ</strong></span>
+                  <span>•</span>
+                  <span>Lượt bán: <strong>${d.sales_count}</strong></span>
+                  <span>•</span>
+                  <span>Doanh thu: <strong style="color: #059669;">${new Intl.NumberFormat('vi-VN').format(d.revenue || 0)} VNĐ</strong></span>
+                </div>
+              </div>
+            </div>
+          `).join('');
+          
+          // Update chart
+          if (revenueChart) {
+            revenueChart.destroy();
+          }
+          
+          const ctx = document.getElementById('revenueChart');
+          if (ctx) {
+            revenueChart = new Chart(ctx, {
+              type: 'bar',
+              data: {
+                labels: data.datasets.map(d => d.title.length > 20 ? d.title.substring(0, 20) + '...' : d.title),
+                datasets: [{
+                  label: 'Doanh thu (VNĐ)',
+                  data: data.datasets.map(d => d.revenue || 0),
+                  backgroundColor: '#0b5fff',
+                  borderRadius: 8
+                }, {
+                  label: 'Lượt bán',
+                  data: data.datasets.map(d => d.sales_count || 0),
+                  backgroundColor: '#059669',
+                  borderRadius: 8
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                  legend: { display: true },
+                  title: { display: true, text: 'Doanh thu theo Dataset', font: { size: 16 } }
+                },
+                scales: {
+                  y: { beginAtZero: true }
+                }
+              }
+            });
+          }
+          
+          loading.style.display = 'none';
+        } catch (e) {
+          console.error(e);
+          loading.style.display = 'none';
+          list.innerHTML = '<p style="color: #b91c1c;">Lỗi tải doanh thu.</p>';
+        }
+      }
+      
+      loadRevenue();
+    </script>
+  </body>
+</html>
+

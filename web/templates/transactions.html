@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lịch sử giao dịch - EV Data Marketplace</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <div class="brand">
+          <img src="/static/logo.svg" alt="EV Data"/>
+          <div class="brand-name">EV Data Marketplace</div>
+        </div>
+        <div class="header-actions">
+          <a href="/ui/dashboard"><button class="btn btn-secondary" type="button">Dashboard</button></a>
+          <button id="logoutBtn" class="btn btn-secondary" type="button">Đăng xuất</button>
+        </div>
+      </header>
+      <aside class="app-sidebar">
+        <div class="nav-section">
+          <h3>Điều hướng</h3>
+          <ul class="nav-list">
+            <li><a href="/ui/dashboard">🏠 Dashboard</a></li>
+            <li><a href="/ui/search">🔎 Tìm kiếm</a></li>
+            <li><a href="/ui/my-datasets">📂 My Datasets</a></li>
+            <li><a href="/ui/profile">👤 Hồ sơ</a></li>
+          </ul>
+        </div>
+      </aside>
+      <main class="app-main">
+        <div class="card">
+          <h1 class="page-title">💳 Lịch sử giao dịch</h1>
+          
+          <div id="transactionsLoading" style="display: none;">
+            <span class="spinner"></span> Đang tải...
+          </div>
+          
+          <div id="transactionsContent">
+            <div id="transactionsList"></div>
+            <div id="transactionsEmpty" style="display: none; text-align: center; padding: 40px; color: #64748b;">
+              <p style="font-size: 18px; margin-bottom: 12px;">Chưa có giao dịch nào</p>
+              <a href="/ui/search" class="btn btn-primary">Khám phá datasets</a>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script src="/static/app.js"></script>
+    <script>
+      async function loadTransactions() {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          document.getElementById('transactionsList').innerHTML = '<p>Vui lòng đăng nhập để xem lịch sử giao dịch.</p>';
+          return;
+        }
+        
+        const loading = document.getElementById('transactionsLoading');
+        const list = document.getElementById('transactionsList');
+        const empty = document.getElementById('transactionsEmpty');
+        
+        loading.style.display = 'block';
+        list.innerHTML = '';
+        empty.style.display = 'none';
+        
+        try {
+          const res = await fetch('/transactions/mine', {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          
+          if (!res.ok) {
+            throw new Error('Không thể tải lịch sử giao dịch');
+          }
+          
+          const data = await res.json();
+          
+          if (!Array.isArray(data) || data.length === 0) {
+            loading.style.display = 'none';
+            empty.style.display = 'block';
+            return;
+          }
+          
+          list.innerHTML = data.map(tx => `
+            <div class="list-item" style="margin-bottom: 12px;">
+              <div style="flex: 1;">
+                <div class="list-title">${tx.dataset_title || 'N/A'}</div>
+                <div class="list-meta">
+                  <span>ID giao dịch: #${tx.id}</span>
+                  <span>•</span>
+                  <span>Dataset ID: #${tx.dataset_id}</span>
+                  <span>•</span>
+                  <span class="list-date">${tx.created_at ? new Date(tx.created_at).toLocaleString('vi-VN') : 'N/A'}</span>
+                </div>
+              </div>
+              <div>
+                <a href="/ui/dataset?id=${tx.dataset_id}" class="btn btn-secondary" style="text-decoration: none;">Xem chi tiết</a>
+              </div>
+            </div>
+          `).join('');
+          
+          loading.style.display = 'none';
+        } catch (e) {
+          console.error(e);
+          loading.style.display = 'none';
+          list.innerHTML = '<p style="color: #b91c1c;">Lỗi tải lịch sử giao dịch.</p>';
+        }
+      }
+      
+      loadTransactions();
+    </script>
+  </body>
+</html>
+

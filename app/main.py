@@ -7,6 +7,8 @@ from app.api import routes
 from app.api import auth_routes, user_routes  # ✅ thêm 2 dòng này
 from app.api import dataset_routes
 from app.api import transaction_routes
+from app.api import admin_routes
+from app.api import provider_routes
 from app.core.database import Base, engine
 import os
 
@@ -18,6 +20,8 @@ app.include_router(auth_routes.router)
 app.include_router(user_routes.router)
 app.include_router(dataset_routes.router)
 app.include_router(transaction_routes.router)
+app.include_router(admin_routes.router)
+app.include_router(provider_routes.router)
 
 # CORS
 app.add_middleware(
@@ -70,3 +74,19 @@ def ui_my_datasets(request: Request):
 @app.get("/ui/profile", response_class=HTMLResponse)
 def ui_profile(request: Request):
     return templates.TemplateResponse("profile.html", {"request": request})
+
+@app.get("/ui/dataset", response_class=HTMLResponse)
+def ui_dataset_detail(request: Request):
+    return templates.TemplateResponse("dataset_detail.html", {"request": request})
+
+@app.get("/ui/transactions", response_class=HTMLResponse)
+def ui_transactions(request: Request):
+    return templates.TemplateResponse("transactions.html", {"request": request})
+
+@app.get("/ui/admin", response_class=HTMLResponse)
+def ui_admin(request: Request):
+    return templates.TemplateResponse("admin_dashboard.html", {"request": request})
+
+@app.get("/ui/revenue", response_class=HTMLResponse)
+def ui_provider_revenue(request: Request):
+    return templates.TemplateResponse("provider_revenue.html", {"request": request})

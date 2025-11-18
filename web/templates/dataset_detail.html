@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chi tiết Dataset - EV Data Marketplace</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <div class="brand">
+          <img src="/static/logo.svg" alt="EV Data"/>
+          <div class="brand-name">EV Data Marketplace</div>
+        </div>
+        <div class="header-actions">
+          <a href="/ui/dashboard"><button class="btn btn-secondary" type="button">Dashboard</button></a>
+          <a href="/ui/search"><button class="btn btn-secondary" type="button">Tìm kiếm</button></a>
+        </div>
+      </header>
+      <aside class="app-sidebar">
+        <div class="nav-section">
+          <h3>Điều hướng</h3>
+          <ul class="nav-list">
+            <li><a href="/ui/dashboard">🏠 Dashboard</a></li>
+            <li><a href="/ui/search">🔎 Tìm kiếm</a></li>
+            <li><a href="/ui/my-datasets">📂 My Datasets</a></li>
+            <li><a href="/ui/transactions">💳 Lịch sử giao dịch</a></li>
+          </ul>
+        </div>
+      </aside>
+      <main class="app-main">
+        <div class="card">
+          <div style="margin-bottom: 16px;">
+            <a href="/ui/search" style="text-decoration: none; color: #0b5fff;">← Quay lại tìm kiếm</a>
+          </div>
+          
+          <div id="datasetLoading" style="display: none;">
+            <span class="spinner"></span> Đang tải...
+          </div>
+          
+          <div id="datasetContent" style="display: none;">
+            <h1 class="page-title" id="datasetTitle"></h1>
+            
+            <div class="grid-gap" style="margin-top: 20px;">
+              <div>
+                <div class="form-group">
+                  <label>Mô tả</label>
+                  <div id="datasetDescription" style="padding: 12px; background: #f8fafc; border-radius: 8px; min-height: 60px;"></div>
+                </div>
+                
+                <div class="form-group">
+                  <label>Thông tin</label>
+                  <div style="display: grid; gap: 8px;">
+                    <div style="display: flex; justify-content: space-between; padding: 8px; background: #f8fafc; border-radius: 6px;">
+                      <span style="color: #64748b;">Giá:</span>
+                      <strong id="datasetPrice" style="color: #0b5fff;"></strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 8px; background: #f8fafc; border-radius: 6px;">
+                      <span style="color: #64748b;">Người cung cấp:</span>
+                      <strong id="datasetOwner"></strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 8px; background: #f8fafc; border-radius: 6px;">
+                      <span style="color: #64748b;">Ngày tạo:</span>
+                      <span id="datasetDate"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <div class="card" style="background: linear-gradient(135deg, #0b5fff 0%, #0a50db 100%); color: white; padding: 24px;">
+                  <h3 style="margin-bottom: 16px; color: white;">Mua Dataset</h3>
+                  <div style="font-size: 32px; font-weight: 800; margin-bottom: 20px;" id="purchasePrice"></div>
+                  <button id="purchaseBtn" class="btn" style="background: white; color: #0b5fff; width: 100%; padding: 14px; font-size: 16px; font-weight: 700;">
+                    🛒 Mua ngay
+                  </button>
+                  <div id="purchaseMessage" style="margin-top: 12px; font-size: 14px; opacity: 0.9;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div id="datasetError" style="display: none; padding: 20px; text-align: center; color: #b91c1c;">
+            <p>Không tìm thấy dataset hoặc có lỗi xảy ra.</p>
+            <a href="/ui/search" class="btn btn-primary" style="margin-top: 12px;">Quay lại tìm kiếm</a>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script src="/static/app.js"></script>
+    <script>
+      // Load dataset detail
+      async function loadDatasetDetail() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const datasetId = urlParams.get('id');
+        
+        if (!datasetId) {
+          document.getElementById('datasetError').style.display = 'block';
+          return;
+        }
+        
+        const loading = document.getElementById('datasetLoading');
+        const content = document.getElementById('datasetContent');
+        const error = document.getElementById('datasetError');
+        
+        loading.style.display = 'block';
+        content.style.display = 'none';
+        error.style.display = 'none';
+        
+        try {
+          const res = await fetch(`/datasets/${datasetId}`);
+          if (!res.ok) {
+            throw new Error('Dataset không tồn tại');
+          }
+          const data = await res.json();
+          
+          document.getElementById('datasetTitle').textContent = data.title || 'Không có tiêu đề';
+          document.getElementById('datasetDescription').textContent = data.description || 'Không có mô tả';
+          document.getElementById('datasetPrice').textContent = `${data.price || 0} VNĐ`;
+          document.getElementById('purchasePrice').textContent = `${data.price || 0} VNĐ`;
+          document.getElementById('datasetOwner').textContent = data.owner_username || `ID: ${data.owner_id}`;
+          document.getElementById('datasetDate').textContent = data.created_at ? new Date(data.created_at).toLocaleDateString('vi-VN') : 'N/A';
+          
+          window.currentDatasetId = datasetId;
+          window.currentDatasetPrice = data.price || 0;
+          
+          loading.style.display = 'none';
+          content.style.display = 'block';
+        } catch (e) {
+          console.error(e);
+          loading.style.display = 'none';
+          error.style.display = 'block';
+        }
+      }
+      
+      // Purchase button
+      const purchaseBtn = document.getElementById('purchaseBtn');
+      if (purchaseBtn) {
+        purchaseBtn.addEventListener('click', async () => {
+          const token = localStorage.getItem('token');
+          if (!token) {
+            alert('Vui lòng đăng nhập để mua dataset');
+            window.location.href = '/ui/login';
+            return;
+          }
+          
+          if (!window.currentDatasetId) {
+            alert('Lỗi: Không tìm thấy dataset ID');
+            return;
+          }
+          
+          purchaseBtn.disabled = true;
+          purchaseBtn.textContent = 'Đang xử lý...';
+          
+          try {
+            const res = await fetch(`/transactions/purchase?dataset_id=${parseInt(window.currentDatasetId)}`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            });
+            
+            const data = await res.json();
+            
+            if (data.ok) {
+              document.getElementById('purchaseMessage').textContent = '✅ ' + (data.message || 'Mua thành công!');
+              purchaseBtn.textContent = '✅ Đã mua';
+              purchaseBtn.style.background = '#059669';
+              purchaseBtn.style.color = 'white';
+              showToast('Mua dataset thành công!', 'success');
+            } else {
+              throw new Error(data.detail || 'Mua thất bại');
+            }
+          } catch (e) {
+            alert('Lỗi: ' + e.message);
+            purchaseBtn.disabled = false;
+            purchaseBtn.textContent = '🛒 Mua ngay';
+          }
+        });
+      }
+      
+      loadDatasetDetail();
+    </script>
+  </body>
+</html>
+
