@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dataset Detail</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h2>Dataset Detail</h2>
+
+    <div id="content">Loading...</div>
+
+    <script>
+        const datasetId = "{{ dataset_id }}";
+        const token = localStorage.getItem("token");
+
+        async function loadDetail() {
+            const res = await fetch(`/datasets/${datasetId}`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            if (!res.ok) {
+                document.getElementById("content").innerHTML = "Dataset not found!";
+                return;
+            }
+
+            const d = await res.json();
+            const isOwner = localStorage.getItem("user_id") == d.owner_id;
+
+            document.getElementById("content").innerHTML = `
+                <h3>${d.title}</h3>
+                <p><b>Description:</b> ${d.description}</p>
+                <p><b>Price:</b> $${d.price}</p>
+                <p><b>Owner:</b> ${d.owner_id}</p>
+                <p><b>Created:</b> ${d.created_at}</p>
+
+                <h4>CSV Preview (10 dòng đầu):</h4>
+                <pre style="background:#eee; padding:10px;">${d.preview.join("\n")}</pre>
+
+                ${ isOwner ? `
+                    <button onclick="editDataset()">Edit</button>
+                    <button onclick="deleteDataset()" style="color:red;">Delete</button>
+                ` : "" }
+            `;
+        }
+
+        function editDataset() {
+            window.location.href = `/ui/edit-dataset/${datasetId}`;
+        }
+
+        async function deleteDataset() {
+            if (!confirm("Bạn chắc chắn muốn xóa?")) return;
+            const res = await fetch(`/datasets/${datasetId}`, {
+                method: "DELETE",
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (res.ok) {
+                alert("Đã xóa dataset");
+                window.location.href = "/ui/my-datasets";
+            } else {
+                alert("Không thể xóa dataset");
+            }
+        }
+
+        loadDetail();
+    </script>
+</body>
+</html>
