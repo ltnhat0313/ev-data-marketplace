@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hồ sơ cá nhân - EV Data Marketplace</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <div class="brand">
+          <img src="/static/logo.svg" alt="EV Data"/>
+          <div class="brand-name">EV Data Marketplace</div>
+        </div>
+        <div class="header-actions">
+          <a href="/ui/dashboard"><button class="btn btn-secondary" type="button">Dashboard</button></a>
+          <button id="logoutBtn" class="btn btn-secondary" type="button">Đăng xuất</button>
+        </div>
+      </header>
+      <aside class="app-sidebar">
+        <div class="nav-section">
+          <h3>Điều hướng</h3>
+          <ul class="nav-list">
+            <li><a href="/ui/dashboard">🏠 Dashboard</a></li>
+            <li><a href="/ui/search">🔎 Tìm kiếm</a></li>
+            <li><a href="/ui/my-datasets">📂 My Datasets</a></li>
+            <li><a href="/ui/transactions">💳 Lịch sử giao dịch</a></li>
+            <li><a href="/ui/profile">👤 Hồ sơ</a></li>
+          </ul>
+        </div>
+      </aside>
+      <main class="app-main">
+        <div class="card">
+          <h1 class="page-title">👤 Hồ sơ cá nhân</h1>
+          <div id="profileInfo"></div>
+      <div class="form-group" style="margin-top:16px;">
+        <label>Đổi mật khẩu</label>
+        <form id="changePwdForm">
+          <div class="form-group">
+            <label for="old_password">Mật khẩu cũ</label>
+            <input type="password" id="old_password" required />
+          </div>
+          <div class="form-group">
+            <label for="new_password">Mật khẩu mới</label>
+            <input type="password" id="new_password" required />
+          </div>
+          <button type="submit">Cập nhật mật khẩu</button>
+        </form>
+      </div>
+
+          <div class="form-group" style="margin-top:16px;">
+            <label>Two-Factor Authentication (2FA)</label>
+            <div id="twofaStatus">Đang kiểm tra...</div>
+            <div id="twofaSetupBox" style="margin-top:8px;"></div>
+            <div id="twofaQR" style="margin-top:8px;"></div>
+            <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+              <button id="btnTwofaSetup" class="btn btn-secondary" type="button">Tạo mã 2FA mới</button>
+              <input id="twofaCode" placeholder="Nhập mã 2FA" />
+              <button id="btnTwofaEnable" class="btn btn-primary" type="button">Bật 2FA</button>
+              <button id="btnTwofaDisable" class="btn btn-secondary" type="button">Tắt 2FA</button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script src="/static/app.js"></script>
+  </body>
+  </html>
+
+

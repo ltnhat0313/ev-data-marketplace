@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tìm kiếm nâng cao - EV Data Marketplace</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <div class="brand">
+          <img src="/static/logo.svg" alt="EV Data"/>
+          <div class="brand-name">EV Data Marketplace</div>
+        </div>
+        <div class="header-actions">
+          <a href="/ui/dashboard"><button class="btn btn-secondary" type="button">Dashboard</button></a>
+        </div>
+      </header>
+      <aside class="app-sidebar">
+        <div class="nav-section">
+          <h3>Điều hướng</h3>
+          <ul class="nav-list">
+            <li><a href="/ui/dashboard">🏠 Dashboard</a></li>
+            <li><a href="/ui/search">🔎 Tìm kiếm</a></li>
+            <li><a href="/ui/upload">📤 Tải lên Dataset</a></li>
+            <li><a href="/ui/my-datasets">📂 My Datasets</a></li>
+            <li><a href="/ui/transactions">💳 Lịch sử giao dịch</a></li>
+          </ul>
+        </div>
+      </aside>
+      <main class="app-main">
+        <div class="card">
+          <h1 class="page-title">🔎 Tìm kiếm nâng cao</h1>
+      <form id="searchForm">
+        <div class="form-group">
+          <label for="q">Từ khóa</label>
+          <input type="text" id="q" placeholder="Tiêu đề/Mô tả" />
+        </div>
+        <div class="form-group">
+          <label for="min_price">Giá tối thiểu</label>
+          <input type="number" step="0.01" id="min_price" />
+        </div>
+        <div class="form-group">
+          <label for="max_price">Giá tối đa</label>
+          <input type="number" step="0.01" id="max_price" />
+        </div>
+        <div class="form-group">
+          <label for="owner_id">Chủ sở hữu (ID)</label>
+          <input type="number" id="owner_id" />
+        </div>
+        <div class="form-group">
+          <label for="start_date">Từ ngày</label>
+          <input type="date" id="start_date" />
+        </div>
+        <div class="form-group">
+          <label for="end_date">Đến ngày</label>
+          <input type="date" id="end_date" />
+        </div>
+        <div class="form-group">
+          <label for="sort_by">Sắp xếp theo</label>
+          <select id="sort_by">
+            <option value="created_at">Ngày tạo</option>
+            <option value="price">Giá</option>
+            <option value="title">Tiêu đề</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="sort_dir">Thứ tự</label>
+          <select id="sort_dir">
+            <option value="desc">Giảm dần</option>
+            <option value="asc">Tăng dần</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="page_size">Số dòng / trang</label>
+          <input type="number" id="page_size" value="10" />
+        </div>
+        <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+      </form>
+
+        <div class="form-group" style="margin-top:16px;">
+          <label>Kết quả</label>
+          <div id="results" class="card">
+            <div id="resultsLoading" style="display:none;"><span class="spinner"></span> Đang tải...</div>
+            <table class="table" id="resultsTable" style="width:100%;">
+              <thead>
+                <tr>
+                  <th>Tiêu đề</th>
+                  <th>Mô tả</th>
+                  <th>Giá</th>
+                  <th>Ngày tạo</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <div id="resultsEmpty" style="display:none;color:#64748b;">Không có kết quả.</div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px;">
+            <button id="prevPage" class="btn btn-secondary" type="button">Trang trước</button>
+            <button id="nextPage" class="btn btn-secondary" type="button">Trang sau</button>
+          </div>
+        </div>
+
+        </div>
+      </main>
+    </div>
+    <script src="/static/app.js"></script>
+  </body>
+  </html>
+
+

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - EV Data Marketplace</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <div class="brand">
+          <img src="/static/logo.svg" alt="EV Data"/>
+          <div class="brand-name">EV Data Marketplace</div>
+        </div>
+        <div class="header-actions">
+          <a href="/ui/login"><button class="btn btn-secondary" type="button">Đăng nhập</button></a>
+          <a href="/ui/register"><button class="btn btn-primary" type="button">Đăng ký</button></a>
+          <a href="/ui/profile"><button class="btn btn-secondary" type="button">Hồ sơ</button></a>
+          <button id="logoutBtn" class="btn btn-secondary" type="button">Đăng xuất</button>
+        </div>
+      </header>
+      <aside class="app-sidebar">
+        <div class="nav-section">
+          <h3>Điều hướng</h3>
+          <ul class="nav-list">
+            <li><a href="/ui/dashboard">🏠 Dashboard</a></li>
+            <li><a href="/ui/search">🔎 Tìm kiếm nâng cao</a></li>
+            <li><a href="/ui/upload">📤 Tải lên Dataset</a></li>
+            <li><a href="/ui/my-datasets">📂 My Datasets</a></li>
+            <li><a href="/ui/transactions">💳 Lịch sử giao dịch</a></li>
+            <li><a href="/ui/revenue">💰 Doanh thu (Provider)</a></li>
+            <li><a href="/ui/admin">🔐 Admin Dashboard</a></li>
+          </ul>
+        </div>
+      </aside>
+      <main class="app-main">
+        <div class="card">
+          <h1 class="page-title">📊 Dashboard</h1>
+          <div class="grid-3" id="summary" aria-label="Tổng quan nhanh">
+            <div class="card grid-gap summary-card" aria-live="polite">
+              <div class="stat-label">Người dùng</div>
+              <div class="stat-value" id="sumUsers">0</div>
+            </div>
+            <div class="card grid-gap summary-card" aria-live="polite">
+              <div class="stat-label">Datasets</div>
+              <div class="stat-value" id="sumDatasets">0</div>
+            </div>
+            <div class="card grid-gap summary-card" aria-live="polite">
+              <div class="stat-label">Giao dịch</div>
+              <div class="stat-value" id="sumTxs">0</div>
+            </div>
+          </div>
+
+          <div class="form-group latest-section">
+            <label> Mới nhất </label>
+            <ul id="latestList" class="list"></ul>
+          </div>
+
+          <div class="form-group btn-group">
+            <a href="/ui/search"><button class="btn btn-secondary" type="button">🔎 Tìm kiếm nâng cao</button></a>
+            <a href="/ui/upload"><button class="btn btn-primary" type="button">📤 Tải lên Dataset</button></a>
+            <a href="/ui/my-datasets"><button class="btn btn-secondary" type="button">📂 My Datasets</button></a>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 12px;">
+          <h2 class="page-title">📈 Thống kê & Phân tích</h2>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 16px;">
+            <div>
+              <canvas id="statsChart" style="max-height: 300px;"></canvas>
+            </div>
+            <div>
+              <canvas id="priceChart" style="max-height: 300px;"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 12px;">
+          <h2 class="page-title">EV Data Analytics Marketplace</h2>
+          <div class="grid-gap">
+            <div>
+              <div class="form-group">
+                <label>Chợ dữ liệu phân tích xe điện</label>
+                <div>
+                  Nền tảng kết nối Data Provider và Data Consumer trong lĩnh vực EV.
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div class="form-group">
+                <label>Actors</label>
+                <ul class="list">
+                  <li class="list-item"><div class="list-title">Data Consumer</div></li>
+                  <li class="list-item"><div class="list-title">Data Provider</div></li>
+                  <li class="list-item"><div class="list-title">Admin</div></li>
+                </ul>
+              </div>
+            </div>
+
+            <div>
+              <div class="form-group">
+                <label>1. Chức năng cho Người dùng dữ liệu (Data Consumers)</label>
+                <ul class="list">
+                  <li class="list-item">
+                    <div>
+                      <div class="list-title">a. Tìm kiếm & khám phá dữ liệu</div>
+                      <div class="list-meta">Danh mục: hành vi lái xe, hiệu suất pin, trạm sạc, giao dịch V2G...; Bộ lọc: thời gian, khu vực, loại xe, loại pin, định dạng.</div>
+                    </div>
+                  </li>
+                  <li class="list-item">
+                    <div>
+                      <div class="list-title">b. Mua/thuê gói dữ liệu</div>
+                      <div class="list-meta">Thanh toán theo lượt tải, thuê bao hoặc API; gói raw hoặc đã phân tích.</div>
+                    </div>
+                  </li>
+                  <li class="list-item">
+                    <div>
+                      <div class="list-title">c. Công cụ phân tích tích hợp</div>
+                      <div class="list-meta">Dashboard trực quan (SoC/SoH, tần suất sạc, quãng đường, CO₂); AI gợi ý, dự báo hạ tầng sạc.</div>
+                    </div>
+                  </li>
+                  <li class="list-item">
+                    <div>
+                      <div class="list-title">d. API truy cập dữ liệu</div>
+                      <div class="list-meta">Tích hợp với bảo hiểm, smart city, fleet management, ...</div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div>
+              <div class="form-group">
+                <label>2. Chức năng cho Nhà cung cấp dữ liệu (Data Providers)</label>
+                <ul class="list">
+                  <li class="list-item">
+                    <div>
+                      <div class="list-title">a. Đăng ký & quản lý nguồn dữ liệu</div>
+                      <div class="list-meta">Đưa dữ liệu pin, hành trình, sạc, giao dịch điện; chia sẻ raw/đã phân tích.</div>
+                    </div>
+                  </li>
+                  <li class="list-item">
+                    <div>
+                      <div class="list-title">b. Thiết lập chính sách chia sẻ & giá</div>
+                      <div class="list-meta">Định giá theo lượt, dung lượng, thuê bao; quy định quyền sử dụng.</div>
+                    </div>
+                  </li>
+                  <li class="list-item">
+                    <div>
+                      <div class="list-title">c. Theo dõi doanh thu từ dữ liệu</div>
+                      <div class="list-meta">Báo cáo lượt tải, doanh thu, đối tượng mua.</div>
+                    </div>
+                  </li>
+                  <li class="list-item">
+                    <div>
+                      <div class="list-title">d. Bảo mật & ẩn danh hóa dữ liệu</div>
+                      <div class="list-meta">Xóa PII, tuân thủ GDPR/CCPA, kiểm soát quyền riêng tư.</div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div>
+              <div class="form-group">
+                <label>3. Chức năng cho Nhà vận hành (Admin)</label>
+                <ul class="list">
+                  <li class="list-item">
+                    <div>
+                      <div class="list-title">a. Quản lý người dùng & phân quyền</div>
+                      <div class="list-meta">Quản lý provider, consumer, đối tác; kiểm duyệt dữ liệu.</div>
+                    </div>
+                  </li>
+                  <li class="list-item">
+                    <div>
+                      <div class="list-title">b. Thanh toán & chia sẻ doanh thu</div>
+                      <div class="list-meta">Xử lý giao dịch; chia sẻ lợi nhuận cho nhà cung cấp.</div>
+                    </div>
+                  </li>
+                  <li class="list-item">
+                    <div>
+                      <div class="list-title">c. Bảo mật & quyền riêng tư</div>
+                      <div class="list-meta">Mã hóa dữ liệu, quản lý truy cập API, tuân thủ bảo mật.</div>
+                    </div>
+                  </li>
+                  <li class="list-item">
+                    <div>
+                      <div class="list-title">d. Phân tích & báo cáo tổng hợp</div>
+                      <div class="list-meta">Thống kê thị trường, AI gợi ý xu hướng phát triển EV.</div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 12px;">
+          <h2 class="page-title">Mô hình thanh toán & gói dữ liệu</h2>
+          <ul class="list">
+            <li class="list-item">
+              <div>
+                <div class="list-title">Theo lượt tải (Pay-per-download)</div>
+                <div class="list-meta">Trả tiền cho mỗi dataset tải về. Phù hợp nhu cầu dùng một lần.</div>
+              </div>
+            </li>
+            <li class="list-item">
+              <div>
+                <div class="list-title">Thuê bao (Subscription)</div>
+                <div class="list-meta">Truy cập liên tục theo kỳ (tháng/quý/năm), bao gồm cập nhật dữ liệu mới.</div>
+              </div>
+            </li>
+            <li class="list-item">
+              <div>
+                <div class="list-title">Truy cập API theo usage</div>
+                <div class="list-meta">Tính phí theo số request, băng thông, hoặc phạm vi endpoint.</div>
+              </div>
+            </li>
+            <li class="list-item">
+              <div>
+                <div class="list-title">Gói dữ liệu</div>
+                <div class="list-meta">Raw (thô) cho phân tích sâu hoặc Processed (đã tổng hợp/chuẩn hóa/báo cáo).</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top: 12px;">
+          <h2 class="page-title">Bảo mật, quyền riêng tư & tuân thủ</h2>
+          <ul class="list">
+            <li class="list-item">
+              <div>
+                <div class="list-title">Ẩn danh hóa & giảm thiểu dữ liệu</div>
+                <div class="list-meta">Loại bỏ PII, tổng hợp theo vùng/khoảng thời gian; nguyên tắc data minimization.</div>
+              </div>
+            </li>
+            <li class="list-item">
+              <div>
+                <div class="list-title">Mã hóa & kiểm soát truy cập</div>
+                <div class="list-meta">HTTPS/TLS, JWT/OAuth2, phân quyền theo vai trò, giới hạn API key/Token.</div>
+              </div>
+            </li>
+            <li class="list-item">
+              <div>
+                <div class="list-title">Tuân thủ GDPR/CCPA</div>
+                <div class="list-meta">Quy trình consent, quyền xóa/sao chép dữ liệu, lưu trữ có thời hạn.</div>
+              </div>
+            </li>
+            <li class="list-item">
+              <div>
+                <div class="list-title">Giám sát & nhật ký</div>
+                <div class="list-meta">Audit log, phát hiện bất thường, rate-limit, cảnh báo rò rỉ.</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top: 12px;">
+          <h2 class="page-title">API tiêu biểu</h2>
+          <ul class="list">
+            <li class="list-item">
+              <div>
+                <div class="list-title">GET /datasets/search</div>
+                <div class="list-meta">Tìm kiếm theo từ khóa, giá, thời gian, chủ sở hữu, sắp xếp.</div>
+              </div>
+            </li>
+            <li class="list-item">
+              <div>
+                <div class="list-title">POST /datasets/upload</div>
+                <div class="list-meta">Provider tải lên CSV + metadata (title, description, price).</div>
+              </div>
+            </li>
+            <li class="list-item">
+              <div>
+                <div class="list-title">GET /datasets/mine</div>
+                <div class="list-meta">Provider xem và quản lý danh sách dataset của mình.</div>
+              </div>
+            </li>
+            <li class="list-item">
+              <div>
+                <div class="list-title">POST /transactions/purchase</div>
+                <div class="list-meta">Tạo giao dịch mua/thuê dataset, trả về quyền truy cập/đường dẫn tải.</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top: 12px;">
+          <h2 class="page-title">Lộ trình phát triển (Roadmap tóm tắt)</h2>
+          <ul class="list">
+            <li class="list-item"><div class="list-title">Q1: Hoàn thiện CRUD dữ liệu, Search nâng cao, Auth/2FA</div></li>
+            <li class="list-item"><div class="list-title">Q2: Thanh toán tích hợp, chia sẻ doanh thu, Dashboard doanh thu</div></li>
+            <li class="list-item"><div class="list-title">Q3: AI gợi ý & dự báo, báo cáo nâng cao, API rate limiting</div></li>
+            <li class="list-item"><div class="list-title">Q4: Mở rộng marketplace đa khu vực, chuẩn dữ liệu ngành</div></li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top: 12px;">
+          <h2 class="page-title">Use Cases tiêu biểu</h2>
+          <ul class="list">
+            <li class="list-item">
+              <div>
+                <div class="list-title">Tối ưu vận hành đội xe (Fleet)</div>
+                <div class="list-meta">Theo dõi SoC/SoH, lịch sạc tối ưu, dự báo bảo trì để giảm downtime.</div>
+              </div>
+            </li>
+            <li class="list-item">
+              <div>
+                <div class="list-title">Quy hoạch hạ tầng sạc</div>
+                <div class="list-meta">Phân tích mật độ sạc, thời gian cao điểm, đề xuất vị trí đặt trạm.</div>
+              </div>
+            </li>
+            <li class="list-item">
+              <div>
+                <div class="list-title">Bảo hiểm thông minh</div>
+                <div class="list-meta">Định phí dựa trên hành vi lái xe và tình trạng pin theo dữ liệu thực.</div>
+              </div>
+            </li>
+            <li class="list-item">
+              <div>
+                <div class="list-title">Báo cáo ESG & giảm phát thải</div>
+                <div class="list-meta">Tính toán CO₂ tiết kiệm, điện tiêu thụ tái tạo, minh bạch số liệu ESG.</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top: 12px;">
+          <h2 class="page-title">Taxonomy dữ liệu (tóm tắt)</h2>
+          <ul class="list">
+            <li class="list-item"><div><div class="list-title">Hành vi lái xe</div><div class="list-meta">Tốc độ, tăng/giảm tốc, phanh, quãng đường, địa hình.</div></div></li>
+            <li class="list-item"><div><div class="list-title">Pin & sạc</div><div class="list-meta">SoC/SoH, chu kỳ sạc, công suất, nhiệt độ, hiệu suất.</div></div></li>
+            <li class="list-item"><div><div class="list-title">Trạm sạc</div><div class="list-meta">Vị trí, công suất, thời gian sử dụng, hàng chờ, lỗi.</div></div></li>
+            <li class="list-item"><div><div class="list-title">Giao dịch năng lượng (V2G)</div><div class="list-meta">Giá, thời gian, lượng điện, tham gia lưới.</div></div></li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top: 12px;">
+          <h2 class="page-title">Dataset mẫu (gợi ý)</h2>
+          <ul class="list">
+            <li class="list-item"><div><div class="list-title">EV_Drive_Trips_2025_Q1.csv</div><div class="list-meta">100k chuyến | 12 cột | 1.2GB | Raw</div></div></li>
+            <li class="list-item"><div><div class="list-title">Battery_Cycles_Lab_Aggregated.parquet</div><div class="list-meta">500k mẫu | 30 cột | 3.8GB | Processed</div></div></li>
+            <li class="list-item"><div><div class="list-title">Charging_Heatmap_CityX_2024.geojson</div><div class="list-meta">2k nút | geospatial | 12MB | Processed</div></div></li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top: 12px;">
+          <h2 class="page-title">Câu hỏi thường gặp (FAQ)</h2>
+          <ul class="list">
+            <li class="list-item"><div><div class="list-title">Dữ liệu có được ẩn danh không?</div><div class="list-meta">Có. PII được loại bỏ và dữ liệu được tổng hợp theo chính sách riêng tư.</div></div></li>
+            <li class="list-item"><div><div class="list-title">Tôi có thể hoàn tiền khi dataset không phù hợp?</div><div class="list-meta">Chính sách hoàn tiền tùy loại gói (demo/preview/claim) và điều khoản.</div></div></li>
+            <li class="list-item"><div><div class="list-title">Có SDK hay chỉ là API?</div><div class="list-meta">Hiện có REST API; SDK (Python/JS) sẽ phát hành theo roadmap.</div></div></li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top: 12px;">
+          <h2 class="page-title">Bắt đầu ngay</h2>
+          <div class="form-group btn-group">
+            <a href="/ui/search"><button class="btn btn-secondary" type="button">🔎 Khám phá dữ liệu</button></a>
+            <a href="/ui/upload"><button class="btn btn-primary" type="button">📤 Trở thành Data Provider</button></a>
+            <a href="/ui/register"><button class="btn btn-secondary" type="button">📝 Đăng ký tài khoản</button></a>
+          </div>
+        </div>
+      </main>
+    </div>
+    <div class="app-footer">© EV Data Marketplace · Built with FastAPI</div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="/static/app.js"></script>
+    <script>
+      // Load chart data
+      async function loadCharts() {
+        try {
+          const res = await fetch('/datasets/stats/summary');
+          const data = await res.json();
+          
+          // Stats Chart (Bar chart)
+          const ctx1 = document.getElementById('statsChart');
+          if (ctx1) {
+            new Chart(ctx1, {
+              type: 'bar',
+              data: {
+                labels: ['Người dùng', 'Datasets', 'Giao dịch'],
+                datasets: [{
+                  label: 'Tổng số',
+                  data: [data.users || 0, data.datasets || 0, data.transactions || 0],
+                  backgroundColor: ['#0b5fff', '#059669', '#b45309'],
+                  borderRadius: 8
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                  legend: { display: false },
+                  title: { display: true, text: 'Tổng quan hệ thống', font: { size: 16 } }
+                },
+                scales: {
+                  y: { beginAtZero: true }
+                }
+              }
+            });
+          }
+          
+          // Price Chart (if we have latest datasets with prices)
+          const ctx2 = document.getElementById('priceChart');
+          if (ctx2 && data.latest && data.latest.length > 0) {
+            const prices = data.latest.map(d => d.price || 0);
+            const labels = data.latest.map((d, i) => `Dataset ${i + 1}`);
+            
+            new Chart(ctx2, {
+              type: 'line',
+              data: {
+                labels: labels,
+                datasets: [{
+                  label: 'Giá (VNĐ)',
+                  data: prices,
+                  borderColor: '#0b5fff',
+                  backgroundColor: 'rgba(11, 95, 255, 0.1)',
+                  tension: 0.4,
+                  fill: true
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                  legend: { display: true },
+                  title: { display: true, text: 'Giá datasets mới nhất', font: { size: 16 } }
+                },
+                scales: {
+                  y: { beginAtZero: true }
+                }
+              }
+            });
+          }
+        } catch (e) {
+          console.error('Error loading charts:', e);
+        }
+      }
+      
+      // Load charts after page loads
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadCharts);
+      } else {
+        loadCharts();
+      }
+    </script>
+  </body>
+  </html>
+
+
