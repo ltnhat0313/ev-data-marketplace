@@ -1,0 +1,163 @@
+version: '3.8'
+
+services:
+  # --- 1. GATEWAY ---
+  traefik:
+    image: traefik:v2.10
+    container_name: ev_gateway
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - ev_network
+
+  # --- 2. DATABASE ---
+  mysqldb:
+    image: mysql:8.0
+    container_name: ev_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "161105"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d
+    ports:
+      - "3340:3306"
+    networks:
+      - ev_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p161105"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+  # --- 3. BACKEND SERVICES ---
+  
+  # --- AUTH SERVICE ---
+  auth-service:
+    build: ./services/auth-service
+    container_name: ev_auth_service
+    restart: always
+    environment:
+      - DATABASE_URL=mysql+pymysql://root:161105@mysqldb:3306/auth_db
+      - SECRET_KEY=bi_mat_khong_the_bat_mi_123456
+      - ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_MINUTES=120
+      - PROJECT_NAME=EV Auth
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+    networks:
+      - ev_network
+    labels:
+      - "traefik.enable=true"
+      # Middleware chung: Cắt /api ở đầu URL
+      - "traefik.http.middlewares.strip-api.stripprefix.prefixes=/api"
+      
+      # Router cho Auth & Users
+      - "traefik.http.routers.auth.rule=PathPrefix(`/api/auth`) || PathPrefix(`/api/users`)"
+      - "traefik.http.routers.auth.middlewares=strip-api"
+      - "traefik.http.services.auth.loadbalancer.server.port=8000"
+
+  # --- MARKETPLACE SERVICE ---
+  marketplace-service:
+    build: ./services/marketplace-service
+    container_name: ev_market_service
+    restart: always
+    environment:
+      - DATABASE_URL=mysql+pymysql://root:161105@mysqldb:3306/market_db
+      # SỬA: Đổi tên biến từ JWT_SECRET thành SECRET_KEY để khớp config.py
+      - SECRET_KEY=bi_mat_khong_the_bat_mi_123456
+      - UPLOAD_DIR=/app/uploads
+    volumes:
+      - shared_uploads:/app/uploads
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+    networks:
+      - ev_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.market.rule=PathPrefix(`/api/datasets`) || PathPrefix(`/api/transactions`) || PathPrefix(`/api/admin`) || PathPrefix(`/api/provider`)"
+      - "traefik.http.routers.market.middlewares=strip-api"
+      - "traefik.http.services.market.loadbalancer.server.port=8000"
+
+  # --- AI SERVICE ---
+  ai-service:
+    build: ./services/ai-service
+    container_name: ev_ai_service
+    restart: always
+    environment:
+      - DATABASE_URL=mysql+pymysql://root:161105@mysqldb:3306/ai_db
+      # SỬA: Thêm SECRET_KEY để xác thực token người dùng
+      - SECRET_KEY=bi_mat_khong_the_bat_mi_123456
+      - MODEL_DIR=/app/models
+      - UPLOAD_DIR=/app/uploads
+    volumes:
+      - shared_uploads:/app/uploads
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+    networks:
+      - ev_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ai.rule=PathPrefix(`/api/ai`)"
+      - "traefik.http.routers.ai.middlewares=strip-api"
+      - "traefik.http.services.ai.loadbalancer.server.port=8000"
+
+  # --- 4. FRONTENDS ---
+
+  # --- DASHBOARD UI (Python) ---
+  dashboard-ui:
+    build: ./frontends/dashboard-ui
+    container_name: ev_dashboard_ui
+    restart: always
+    environment:
+      - API_GATEWAY_URL=http://traefik:80
+    networks:
+      - ev_network
+    volumes:
+      - ./frontends/dashboard-ui/web:/app/web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=PathPrefix(`/ui`) || PathPrefix(`/static`)"
+      - "traefik.http.services.dashboard.loadbalancer.server.port=8000"
+
+  # --- LANDING PAGE (Java - ĐÃ THÊM VÀO) ---
+  landing-page:
+    build: ./frontends/landing-page
+    container_name: ev_landing_page
+    restart: always
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/market_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=161105
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+    networks:
+      - ev_network
+    labels:
+      - "traefik.enable=true"
+      # Landing page nhận tất cả request còn lại (Trang chủ /)
+      - "traefik.http.routers.landing.rule=PathPrefix(`/`) || PathPrefix(`/images`) || PathPrefix(`/css`) || PathPrefix(`/js`)"
+      # Priority thấp để không chiếm route của API/UI
+      - "traefik.http.routers.landing.priority=1"
+      - "traefik.http.services.landing.loadbalancer.server.port=8080"
+
+volumes:
+  mysql_data:
+  shared_uploads:
+
+networks:
+  ev_network:
+    driver: bridge
