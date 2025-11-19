@@ -232,5 +232,36 @@ def delete_dataset(
     db.delete(d)
     db.commit()
     return {"ok": True}
+@router.get("/{dataset_id}")
+def get_dataset_detail(
+    dataset_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    d = db.query(Dataset).filter(Dataset.id == dataset_id).first()
+    if not d:
+        raise HTTPException(status_code=404, detail="Dataset không tồn tại")
+
+    # Đọc 10 dòng đầu của file CSV
+    preview_lines = []
+    try:
+        with open(d.file_path, "r", encoding="utf-8") as f:
+            for i in range(10):
+                line = f.readline()
+                if not line:
+                    break
+                preview_lines.append(line.strip())
+    except:
+        preview_lines = ["Không thể đọc file"]
+
+    return {
+        "id": d.id,
+        "title": d.title,
+        "description": d.description,
+        "price": d.price,
+        "owner_id": d.owner_id,
+        "created_at": d.created_at.isoformat() if d.created_at else None,
+        "preview": preview_lines
+    }
 
 
