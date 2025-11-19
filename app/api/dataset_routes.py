@@ -164,6 +164,30 @@ def upload_dataset(
     }
 
 
+@router.get("/{dataset_id}")
+def get_dataset(
+    dataset_id: int,
+    db: Session = Depends(get_db),
+):
+    d: Dataset | None = db.query(Dataset).filter(Dataset.id == dataset_id).first()
+    if not d:
+        raise HTTPException(status_code=404, detail="Dataset không tồn tại")
+    
+    # Get owner info
+    owner = db.query(User).filter(User.id == d.owner_id).first()
+    
+    return {
+        "id": d.id,
+        "title": d.title,
+        "description": d.description,
+        "price": d.price,
+        "owner_id": d.owner_id,
+        "owner_username": owner.username if owner else None,
+        "file_path": d.file_path,
+        "created_at": d.created_at.isoformat() if d.created_at else None,
+    }
+
+
 @router.get("/mine")
 def my_datasets(
     db: Session = Depends(get_db),

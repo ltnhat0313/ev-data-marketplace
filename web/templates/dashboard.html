@@ -28,6 +28,9 @@
             <li><a href="/ui/search">🔎 Tìm kiếm nâng cao</a></li>
             <li><a href="/ui/upload">📤 Tải lên Dataset</a></li>
             <li><a href="/ui/my-datasets">📂 My Datasets</a></li>
+            <li><a href="/ui/transactions">💳 Lịch sử giao dịch</a></li>
+            <li><a href="/ui/revenue">💰 Doanh thu (Provider)</a></li>
+            <li><a href="/ui/admin">🔐 Admin Dashboard</a></li>
           </ul>
         </div>
       </aside>
@@ -58,6 +61,18 @@
             <a href="/ui/search"><button class="btn btn-secondary" type="button">🔎 Tìm kiếm nâng cao</button></a>
             <a href="/ui/upload"><button class="btn btn-primary" type="button">📤 Tải lên Dataset</button></a>
             <a href="/ui/my-datasets"><button class="btn btn-secondary" type="button">📂 My Datasets</button></a>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 12px;">
+          <h2 class="page-title">📈 Thống kê & Phân tích</h2>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 16px;">
+            <div>
+              <canvas id="statsChart" style="max-height: 300px;"></canvas>
+            </div>
+            <div>
+              <canvas id="priceChart" style="max-height: 300px;"></canvas>
+            </div>
           </div>
         </div>
 
@@ -351,7 +366,87 @@
       </main>
     </div>
     <div class="app-footer">© EV Data Marketplace · Built with FastAPI</div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="/static/app.js"></script>
+    <script>
+      // Load chart data
+      async function loadCharts() {
+        try {
+          const res = await fetch('/datasets/stats/summary');
+          const data = await res.json();
+          
+          // Stats Chart (Bar chart)
+          const ctx1 = document.getElementById('statsChart');
+          if (ctx1) {
+            new Chart(ctx1, {
+              type: 'bar',
+              data: {
+                labels: ['Người dùng', 'Datasets', 'Giao dịch'],
+                datasets: [{
+                  label: 'Tổng số',
+                  data: [data.users || 0, data.datasets || 0, data.transactions || 0],
+                  backgroundColor: ['#0b5fff', '#059669', '#b45309'],
+                  borderRadius: 8
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                  legend: { display: false },
+                  title: { display: true, text: 'Tổng quan hệ thống', font: { size: 16 } }
+                },
+                scales: {
+                  y: { beginAtZero: true }
+                }
+              }
+            });
+          }
+          
+          // Price Chart (if we have latest datasets with prices)
+          const ctx2 = document.getElementById('priceChart');
+          if (ctx2 && data.latest && data.latest.length > 0) {
+            const prices = data.latest.map(d => d.price || 0);
+            const labels = data.latest.map((d, i) => `Dataset ${i + 1}`);
+            
+            new Chart(ctx2, {
+              type: 'line',
+              data: {
+                labels: labels,
+                datasets: [{
+                  label: 'Giá (VNĐ)',
+                  data: prices,
+                  borderColor: '#0b5fff',
+                  backgroundColor: 'rgba(11, 95, 255, 0.1)',
+                  tension: 0.4,
+                  fill: true
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                  legend: { display: true },
+                  title: { display: true, text: 'Giá datasets mới nhất', font: { size: 16 } }
+                },
+                scales: {
+                  y: { beginAtZero: true }
+                }
+              }
+            });
+          }
+        } catch (e) {
+          console.error('Error loading charts:', e);
+        }
+      }
+      
+      // Load charts after page loads
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadCharts);
+      } else {
+        loadCharts();
+      }
+    </script>
   </body>
   </html>
 

@@ -3,25 +3,57 @@ const uploadForm = document.getElementById("uploadForm");
 if (uploadForm) {
   uploadForm.addEventListener("submit", function (e) {
     e.preventDefault();
-    const name = document.getElementById("name").value;
-    const description = document.getElementById("description").value;
-    const price = document.getElementById("price").value;
+    const name = document.getElementById("name").value.trim();
+    const description = document.getElementById("description").value.trim();
+    const price = parseFloat(document.getElementById("price").value);
     const file = document.getElementById("file").files[0];
-    if (!file) {
-      alert("Vui lòng chọn file CSV!");
-      return;
+    
+    // Validation
+    let hasError = false;
+    clearFieldError('name');
+    clearFieldError('price');
+    clearFieldError('file');
+    
+    if (!name) {
+      showFieldError('name', 'Vui lòng nhập tên dataset');
+      hasError = true;
     }
+    
+    if (isNaN(price) || price < 0) {
+      showFieldError('price', 'Giá phải là số dương');
+      hasError = true;
+    }
+    
+    if (!file) {
+      showFieldError('file', 'Vui lòng chọn file CSV');
+      hasError = true;
+    } else if (!file.name.toLowerCase().endsWith('.csv')) {
+      showFieldError('file', 'Chỉ chấp nhận file CSV');
+      hasError = true;
+    }
+    
+    if (hasError) return;
+    
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("Vui lòng đăng nhập trước khi upload.");
-      window.location.href = "/ui/login";
+      showToast("Vui lòng đăng nhập trước khi upload", "error");
+      setTimeout(() => {
+        window.location.href = "/ui/login";
+      }, 1000);
       return;
     }
+    
+    const submitBtn = uploadForm.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Đang tải lên...';
+    
     const fd = new FormData();
     fd.append("title", name);
     fd.append("description", description);
     fd.append("price", price);
     fd.append("file", file);
+    
     fetch(`/datasets/upload`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
@@ -30,13 +62,21 @@ if (uploadForm) {
       .then((r) => r.json())
       .then((d) => {
         if (d.detail) {
-          alert(`Lỗi: ${d.detail}`);
+          showToast(`Lỗi: ${d.detail}`, "error");
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
         } else {
-          alert(`✅ Đã tạo dataset #${d.id}`);
-          window.location.href = "/ui/dashboard";
+          showToast(`✅ Đã tạo dataset #${d.id}`, "success");
+          setTimeout(() => {
+            window.location.href = "/ui/my-datasets";
+          }, 1000);
         }
       })
-      .catch((e) => alert("Lỗi upload"));
+      .catch((e) => {
+        showToast("Lỗi upload: " + e.message, "error");
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+      });
   });
 }
 
@@ -58,17 +98,20 @@ async function loadSummary() {
     (data.latest || []).forEach((d) => {
       const li = document.createElement("li");
       li.className = 'list-item';
-      const title = document.createElement('div');
+      const title = document.createElement('a');
+      title.href = `/ui/dataset?id=${d.id}`;
       title.className = 'list-title';
+      title.style.textDecoration = 'none';
+      title.style.color = '#0b5fff';
       title.textContent = d.title;
       const meta = document.createElement('div');
       meta.className = 'list-meta';
       const price = document.createElement('span');
       price.className = 'badge badge-info';
-      price.textContent = `${d.price ?? 0}`;
+      price.textContent = `${d.price ?? 0} VNĐ`;
       const date = document.createElement('span');
       date.className = 'list-date';
-      date.textContent = d.created_at || '';
+      date.textContent = d.created_at ? new Date(d.created_at).toLocaleDateString('vi-VN') : '';
       meta.appendChild(price);
       meta.appendChild(date);
       li.appendChild(title);
@@ -128,10 +171,11 @@ async function runSearch(pageOverride) {
     if (tbody) {
       const rows = items.map(d => `
         <tr>
-          <td><strong>${d.title}</strong></td>
-          <td>${d.description || ''}</td>
-          <td><span class="badge badge-info">${d.price ?? 0}</span></td>
-          <td>${d.created_at || ''}</td>
+          <td><a href="/ui/dataset?id=${d.id}" style="text-decoration: none; color: #0b5fff; font-weight: 600;">${d.title}</a></td>
+          <td>${(d.description || '').substring(0, 100)}${(d.description || '').length > 100 ? '...' : ''}</td>
+          <td><span class="badge badge-info">${d.price ?? 0} VNĐ</span></td>
+          <td>${d.created_at ? new Date(d.created_at).toLocaleDateString('vi-VN') : ''}</td>
+          <td><a href="/ui/dataset?id=${d.id}" class="btn btn-primary" style="text-decoration: none; padding: 6px 12px; font-size: 13px;">Xem chi tiết</a></td>
         </tr>
       `).join('');
       tbody.innerHTML = rows;
@@ -168,14 +212,72 @@ function showToast(message, type) {
   setTimeout(() => { el.className = 'toast'; }, 2200);
 }
 
+// Form validation helper
+function validateEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function showFieldError(fieldId, message) {
+  const field = document.getElementById(fieldId);
+  if (!field) return;
+  field.style.borderColor = '#b91c1c';
+  let errorDiv = document.getElementById(fieldId + '_error');
+  if (!errorDiv) {
+    errorDiv = document.createElement('div');
+    errorDiv.id = fieldId + '_error';
+    errorDiv.className = 'field-error';
+    errorDiv.style.color = '#b91c1c';
+    errorDiv.style.fontSize = '13px';
+    errorDiv.style.marginTop = '4px';
+    field.parentElement.appendChild(errorDiv);
+  }
+  errorDiv.textContent = message;
+}
+
+function clearFieldError(fieldId) {
+  const field = document.getElementById(fieldId);
+  if (field) field.style.borderColor = '';
+  const errorDiv = document.getElementById(fieldId + '_error');
+  if (errorDiv) errorDiv.remove();
+}
+
 // Login form
 const loginForm = document.getElementById("loginForm");
 if (loginForm) {
   loginForm.addEventListener("submit", function (e) {
     e.preventDefault();
-    const email = document.getElementById("email").value;
+    const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
     const code = document.getElementById("code") ? document.getElementById("code").value : "";
+    
+    // Validation
+    let hasError = false;
+    clearFieldError('email');
+    clearFieldError('password');
+    
+    if (!email) {
+      showFieldError('email', 'Vui lòng nhập email');
+      hasError = true;
+    } else if (!validateEmail(email)) {
+      showFieldError('email', 'Email không hợp lệ');
+      hasError = true;
+    }
+    
+    if (!password) {
+      showFieldError('password', 'Vui lòng nhập mật khẩu');
+      hasError = true;
+    } else if (password.length < 6) {
+      showFieldError('password', 'Mật khẩu phải có ít nhất 6 ký tự');
+      hasError = true;
+    }
+    
+    if (hasError) return;
+    
+    const submitBtn = loginForm.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Đang đăng nhập...';
+    
     fetch(`/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -185,13 +287,21 @@ if (loginForm) {
       .then((d) => {
         if (d.access_token) {
           localStorage.setItem("token", d.access_token);
-          alert("Đăng nhập thành công");
-          window.location.href = "/ui/dashboard";
+          showToast("Đăng nhập thành công", "success");
+          setTimeout(() => {
+            window.location.href = "/ui/dashboard";
+          }, 500);
         } else {
-          alert(d.detail || "Đăng nhập thất bại");
+          showToast(d.detail || "Đăng nhập thất bại", "error");
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
         }
       })
-      .catch(() => alert("Lỗi đăng nhập"));
+      .catch((e) => {
+        showToast("Lỗi đăng nhập: " + e.message, "error");
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+      });
   });
 }
 
@@ -200,9 +310,47 @@ const registerForm = document.getElementById("registerForm");
 if (registerForm) {
   registerForm.addEventListener("submit", function (e) {
     e.preventDefault();
-    const username = document.getElementById("reg_username").value;
-    const email = document.getElementById("reg_email").value;
+    const username = document.getElementById("reg_username").value.trim();
+    const email = document.getElementById("reg_email").value.trim();
     const password = document.getElementById("reg_password").value;
+    
+    // Validation
+    let hasError = false;
+    clearFieldError('reg_username');
+    clearFieldError('reg_email');
+    clearFieldError('reg_password');
+    
+    if (!username) {
+      showFieldError('reg_username', 'Vui lòng nhập tên người dùng');
+      hasError = true;
+    } else if (username.length < 3) {
+      showFieldError('reg_username', 'Tên người dùng phải có ít nhất 3 ký tự');
+      hasError = true;
+    }
+    
+    if (!email) {
+      showFieldError('reg_email', 'Vui lòng nhập email');
+      hasError = true;
+    } else if (!validateEmail(email)) {
+      showFieldError('reg_email', 'Email không hợp lệ');
+      hasError = true;
+    }
+    
+    if (!password) {
+      showFieldError('reg_password', 'Vui lòng nhập mật khẩu');
+      hasError = true;
+    } else if (password.length < 6) {
+      showFieldError('reg_password', 'Mật khẩu phải có ít nhất 6 ký tự');
+      hasError = true;
+    }
+    
+    if (hasError) return;
+    
+    const submitBtn = registerForm.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Đang đăng ký...';
+    
     fetch(`/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -211,13 +359,21 @@ if (registerForm) {
       .then((r) => r.json())
       .then((d) => {
         if (d.id) {
-          alert("Đăng ký thành công, mời đăng nhập");
-          window.location.href = "/ui/login";
+          showToast("Đăng ký thành công, mời đăng nhập", "success");
+          setTimeout(() => {
+            window.location.href = "/ui/login";
+          }, 1000);
         } else {
-          alert(d.detail || "Đăng ký thất bại");
+          showToast(d.detail || "Đăng ký thất bại", "error");
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
         }
       })
-      .catch(() => alert("Lỗi đăng ký"));
+      .catch((e) => {
+        showToast("Lỗi đăng ký: " + e.message, "error");
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+      });
   });
 }
 
