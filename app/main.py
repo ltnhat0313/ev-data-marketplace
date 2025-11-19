@@ -70,3 +70,9 @@ def ui_my_datasets(request: Request):
 @app.get("/ui/profile", response_class=HTMLResponse)
 def ui_profile(request: Request):
     return templates.TemplateResponse("profile.html", {"request": request})
+@app.get("/ui/dataset/{dataset_id}", response_class=HTMLResponse)
+def ui_dataset_detail(request: Request, dataset_id: int):
+    return templates.TemplateResponse("dataset_detail.html", {
+        "request": request,
+        "dataset_id": dataset_id
+    })
