@@ -57,7 +57,7 @@
                       <strong id="datasetPrice" style="color: #0b5fff;"></strong>
                     </div>
                     <div style="display: flex; justify-content: space-between; padding: 8px; background: #f8fafc; border-radius: 6px;">
-                      <span style="color: #64748b;">Người cung cấp:</span>
+                      <span style="color: #64748b;">Người cung cấp (ID):</span>
                       <strong id="datasetOwner"></strong>
                     </div>
                     <div style="display: flex; justify-content: space-between; padding: 8px; background: #f8fafc; border-radius: 6px;">
@@ -65,6 +65,11 @@
                       <span id="datasetDate"></span>
                     </div>
                   </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 20px;">
+                    <label>CSV Preview (10 dòng đầu)</label>
+                    <pre id="csvPreview" style="background: #f1f5f9; padding: 10px; border-radius: 8px; overflow-x: auto; font-size: 14px; color: #333;"></pre>
                 </div>
               </div>
               
@@ -76,6 +81,11 @@
                     🛒 Mua ngay
                   </button>
                   <div id="purchaseMessage" style="margin-top: 12px; font-size: 14px; opacity: 0.9;"></div>
+                  
+                  <div id="ownerActions" style="margin-top: 20px; display: none; justify-content: space-between;">
+                    <button onclick="editDataset()" class="btn btn-secondary" type="button" style="width: 48%;">Sửa</button>
+                    <button onclick="deleteDataset()" class="btn" type="button" style="width: 48%; background: #dc2626; color: white;">Xóa</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -88,32 +98,48 @@
         </div>
       </main>
     </div>
+    
     <script src="/static/app.js"></script>
     <script>
-      // Load dataset detail
+      // Hàm lấy datasetId từ URL (Giữ logic từ nhánh main/Patch 3)
+      function getDatasetIdFromPath() {
+        // Lấy ID từ path /ui/dataset/ID
+        const parts = window.location.pathname.split('/');
+        // ID là phần tử cuối cùng nếu đường dẫn là /ui/dataset/123
+        const id = parseInt(parts[parts.length - 1]);
+        return isNaN(id) ? null : id;
+      }
+
+      // Load dataset detail (Hợp nhất UI/UX mới với logic backend cũ)
       async function loadDatasetDetail() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const datasetId = urlParams.get('id');
-        
-        if (!datasetId) {
-          document.getElementById('datasetError').style.display = 'block';
-          return;
-        }
-        
+        const datasetId = getDatasetIdFromPath();
+        const token = localStorage.getItem("token");
         const loading = document.getElementById('datasetLoading');
         const content = document.getElementById('datasetContent');
         const error = document.getElementById('datasetError');
-        
+        const ownerActions = document.getElementById('ownerActions');
+
+        if (!datasetId) {
+          error.style.display = 'block';
+          return;
+        }
+
         loading.style.display = 'block';
         content.style.display = 'none';
         error.style.display = 'none';
         
         try {
-          const res = await fetch(`/datasets/${datasetId}`);
+          // Lấy thông tin dataset
+          const res = await fetch(`/datasets/${datasetId}`, {
+            headers: { "Authorization": `Bearer ${token}` }
+          });
+          
           if (!res.ok) {
             throw new Error('Dataset không tồn tại');
           }
+          
           const data = await res.json();
+          const isOwner = localStorage.getItem("user_id") == data.owner_id;
           
           document.getElementById('datasetTitle').textContent = data.title || 'Không có tiêu đề';
           document.getElementById('datasetDescription').textContent = data.description || 'Không có mô tả';
@@ -121,10 +147,17 @@
           document.getElementById('purchasePrice').textContent = `${data.price || 0} VNĐ`;
           document.getElementById('datasetOwner').textContent = data.owner_username || `ID: ${data.owner_id}`;
           document.getElementById('datasetDate').textContent = data.created_at ? new Date(data.created_at).toLocaleDateString('vi-VN') : 'N/A';
+          document.getElementById('csvPreview').textContent = (data.preview || []).join('\n'); // Thêm Preview
           
           window.currentDatasetId = datasetId;
-          window.currentDatasetPrice = data.price || 0;
           
+          // Hiển thị nút Edit/Delete nếu là Owner
+          if (isOwner) {
+            ownerActions.style.display = 'flex';
+          } else {
+            ownerActions.style.display = 'none';
+          }
+
           loading.style.display = 'none';
           content.style.display = 'block';
         } catch (e) {
@@ -133,8 +166,8 @@
           error.style.display = 'block';
         }
       }
-      
-      // Purchase button
+
+      // Purchase button (Giữ logic từ ui-improvements)
       const purchaseBtn = document.getElementById('purchaseBtn');
       if (purchaseBtn) {
         purchaseBtn.addEventListener('click', async () => {
@@ -180,8 +213,30 @@
         });
       }
       
+      // Chức năng Edit/Delete (Lấy từ nhánh main/Patch 3)
+      function editDataset() {
+        const datasetId = window.currentDatasetId;
+        window.location.href = `/ui/edit-dataset/${datasetId}`; // Giả định có route /ui/edit-dataset
+      }
+
+      async function deleteDataset() {
+        const datasetId = window.currentDatasetId;
+        const token = localStorage.getItem("token");
+        if (!confirm("Bạn chắc chắn muốn xóa?")) return;
+        const res = await fetch(`/datasets/${datasetId}`, {
+            method: "DELETE",
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (res.ok) {
+            alert("Đã xóa dataset");
+            window.location.href = "/ui/my-datasets";
+        } else {
+            const data = await res.json();
+            alert(data.detail || "Không thể xóa dataset");
+        }
+      }
+
       loadDatasetDetail();
     </script>
   </body>
 </html>
-
